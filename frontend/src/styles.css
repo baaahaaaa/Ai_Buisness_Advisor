@@ -1,42 +1,10 @@
-:root {
-  --ink: #101A2B;
-  --ink-soft: #445067;
-  --paper: #F1F3F6;
-  --card: #FFFFFF;
-  --border: #DDE2E8;
-  --accent: #B8863B;
-  --accent-soft: #EADFC6;
-  --success: #3F7D5C;
-  --warning: #C9793D;
-  --danger: #B14C4C;
+@import "@angular/material/prebuilt-themes/azure-blue.css";
 
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
-
-* { box-sizing: border-box; }
 
 html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3 {
-  font-family: var(--font-display);
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-
-a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-button {
-  font-family: var(--font-body);
+  height: 100%;
 }

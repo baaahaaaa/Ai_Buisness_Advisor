@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { ClientListComponent } from './components/client-list/client-list.component';
-import { ClientAnalyseComponent } from './components/client-analyse/client-analyse.component';
 
 export const routes: Routes = [
-  { path: '', component: ClientListComponent },
-  { path: 'clients', component: ClientListComponent },
-  { path: 'analyse/:id', component: ClientAnalyseComponent }
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    path: 'customers',
+    loadChildren: () => import('./features/customers/customers.routes').then(m => m.CUSTOMER_ROUTES)
+  },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: 'dashboard' }
 ];

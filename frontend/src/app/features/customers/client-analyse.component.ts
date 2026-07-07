@@ -2,8 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ClientService } from '../../services/client.service';
-import { AnalyseResponse } from '../../models/analyse.model';
+import { ClientService } from '../../core/services/client.service';
+import { AnalyseResponse } from '../../core/models/analyse.model';
 
 @Component({
   selector: 'app-client-analyse',
