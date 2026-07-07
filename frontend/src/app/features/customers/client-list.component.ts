@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ClientService } from '../../services/client.service';
-import { Client } from '../../models/client.model';
+import { ClientService } from '../../core/services/client.service';
+import { Client } from '../../core/models/client.model';
 
 @Component({
   selector: 'app-client-list',

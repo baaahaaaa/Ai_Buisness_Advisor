@@ -66,10 +66,9 @@
         },
         "test": {
           "builder": "@angular/build:karma",
-         "options": {
-  "browser": "src/main.ts",
-  "tsConfig": "tsconfig.app.json",
-  "assets": [
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
