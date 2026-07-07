@@ -1,0 +1,48 @@
+.topbar {
+  background: var(--ink);
+  border-bottom: 3px solid var(--accent);
+}
+
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #fff;
+}
+
+.brand-mark {
+  font-family: var(--font-mono);
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
+.brand-tag {
+  color: #A9B4C4;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}

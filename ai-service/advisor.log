@@ -1,0 +1,73 @@
+2026-07-02 14:06:50,248 INFO package: mysql.connector.plugins
+2026-07-02 14:06:50,248 INFO plugin_name: mysql_native_password
+2026-07-02 14:06:50,249 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:06:53,661 INFO HTTP Request: POST https://api.x.ai/v1/chat/completions "HTTP/1.1 403 Forbidden"
+2026-07-02 14:08:42,457 INFO package: mysql.connector.plugins
+2026-07-02 14:08:42,457 INFO plugin_name: mysql_native_password
+2026-07-02 14:08:42,458 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:08:44,475 INFO Client=1 | Question=Analyse ce client et donne-moi une stratégie commerciale.
+2026-07-02 14:09:32,949 INFO package: mysql.connector.plugins
+2026-07-02 14:09:32,950 INFO plugin_name: mysql_native_password
+2026-07-02 14:09:32,990 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:09:34,993 INFO Client=1 | Question=Analyse ce client et donne-moi une stratégie commerciale.
+2026-07-02 14:10:34,356 INFO package: mysql.connector.plugins
+2026-07-02 14:10:34,356 INFO plugin_name: mysql_native_password
+2026-07-02 14:10:34,358 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:11:09,749 INFO Client=1 | Question=Donne-moi une stratégie pour ce client
+2026-07-02 14:19:46,791 INFO package: mysql.connector.plugins
+2026-07-02 14:19:46,791 INFO plugin_name: mysql_native_password
+2026-07-02 14:19:46,792 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:19:48,756 INFO Client=1 | Question=Analyse ce client et donne-moi une stratégie commerciale.
+2026-07-02 14:28:30,150 INFO package: mysql.connector.plugins
+2026-07-02 14:28:30,150 INFO plugin_name: mysql_native_password
+2026-07-02 14:28:30,152 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:29:44,282 INFO Client=1 | Question=Donne-moi une stratégie pour ce client
+2026-07-02 14:32:25,122 INFO package: mysql.connector.plugins
+2026-07-02 14:32:25,123 INFO plugin_name: mysql_native_password
+2026-07-02 14:32:25,124 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:32:29,206 INFO Client=1 | Question=Analyse ce client et donne-moi une stratégie commerciale.
+2026-07-02 14:54:58,517 INFO package: mysql.connector.plugins
+2026-07-02 14:54:58,518 INFO plugin_name: mysql_native_password
+2026-07-02 14:54:58,520 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-02 14:55:04,946 INFO Client=1 | Question=Génère un résumé exécutif pour ce client
+2026-07-04 12:25:55,397 INFO package: mysql.connector.plugins
+2026-07-04 12:25:55,397 INFO plugin_name: mysql_native_password
+2026-07-04 12:25:56,064 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-04 12:26:24,651 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-04 12:26:24,744 INFO Client=1 | Question=Pourquoi le risque de ce client est-il élevé ?
+2026-07-04 12:36:42,017 INFO package: mysql.connector.plugins
+2026-07-04 12:36:42,017 INFO plugin_name: mysql_native_password
+2026-07-04 12:36:42,019 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-04 13:34:23,037 INFO package: mysql.connector.plugins
+2026-07-04 13:34:23,038 INFO plugin_name: mysql_native_password
+2026-07-04 13:34:23,039 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-04 13:34:27,948 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-04 13:34:27,984 INFO Client=1 | Question=Pourquoi le risque de ce client est-il élevé ?
+2026-07-04 13:34:27,985 ERROR Erreur LLM: Server at localhost:27017 reports wire version 7, but this version of PyMongo requires at least 8 (MongoDB 4.2).
+2026-07-04 13:40:03,901 INFO package: mysql.connector.plugins
+2026-07-04 13:40:03,902 INFO plugin_name: mysql_native_password
+2026-07-04 13:40:03,903 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-04 13:40:08,873 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-04 13:40:08,884 INFO Client=1 | Question=Pourquoi le risque de ce client est-il élevé ?
+2026-07-04 13:40:33,645 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-04 13:40:33,646 INFO Client=1 | Question=Est-ce que ce client est éligible à la télématique ?
+2026-07-04 13:40:56,129 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-04 13:40:56,131 INFO Client=1 | Question=Quelle stratégie commerciale recommandes-tu pour fidéliser ce client ?
+2026-07-05 12:09:47,809 INFO package: mysql.connector.plugins
+2026-07-05 12:09:47,815 INFO plugin_name: mysql_native_password
+2026-07-05 12:09:48,295 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-05 12:14:27,161 INFO package: mysql.connector.plugins
+2026-07-05 12:14:27,162 INFO plugin_name: mysql_native_password
+2026-07-05 12:14:27,165 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-05 12:16:25,773 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-05 12:16:26,111 INFO Client=1 | Question=Pourquoi le risque de ce client est-il élevé ?
+2026-07-05 12:21:20,010 INFO package: mysql.connector.plugins
+2026-07-05 12:21:20,010 INFO plugin_name: mysql_native_password
+2026-07-05 12:21:20,012 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-05 12:24:32,822 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-05 12:24:32,836 INFO Client=1 | Question=Génère un résumé exécutif pour ce client
+2026-07-07 11:25:34,956 INFO package: mysql.connector.plugins
+2026-07-07 11:25:35,061 INFO plugin_name: mysql_native_password
+2026-07-07 11:25:35,063 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-07 11:26:19,967 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-07 11:26:20,053 INFO Client=1 | Question=Pourquoi le risque est-il élevé

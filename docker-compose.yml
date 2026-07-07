@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ai-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: ai_business_advisor
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  ai-service:
+    build: ./ai-service
+    container_name: ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - XAI_API_KEY=${XAI_API_KEY}
+    depends_on:
+      - mysql
+    volumes:
+      - ./ai-service:/app
+
+volumes:
+  mysql-data:
