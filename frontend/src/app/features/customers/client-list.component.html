@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="header-row">
+    <div>
+      <h2>Portefeuille Clients</h2>
+      <p class="subtitle">{{ filteredClients().length }} / {{ allClients().length }} dossiers</p>
+    </div>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Rechercher (nom, ville, ID)..."
+      [value]="search()"
+      (input)="onSearchChange($any($event.target).value)" />
+  </div>
+
+  <div *ngIf="loading()">Chargement...</div>
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+
+  <table *ngIf="!loading() && displayedClients().length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Prenom</th>
+        <th>Age</th>
+        <th>Ville</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of displayedClients()">
+        <td>{{ client.clientId }}</td>
+        <td>{{ client.nom }}</td>
+        <td>{{ client.prenom }}</td>
+        <td>{{ client.age }}</td>
+        <td><span class="ville-chip">{{ client.ville }}</span></td>
+        <td>
+          <a class="analyser" [routerLink]="['/customers/analyse', client.clientId]">Analyser</a>
+          <button (click)="deleteClient(client.clientId)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination" *ngIf="!loading()">
+    <button (click)="previousPage()" [disabled]="currentPage() === 1">Precedent</button>
+    <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">Suivant</button>
+  </div>
+
+  <p *ngIf="!loading() && displayedClients().length === 0">Aucun client trouve.</p>
+</div>

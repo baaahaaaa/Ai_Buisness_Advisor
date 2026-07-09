@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterOutlet,RouterLink  } from '@angular/router';
+import { MainLayoutComponent } from './core/components/main-layout/main-layout.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  imports: [MainLayoutComponent],
+  template: '<app-main-layout></app-main-layout>',
+  styles: []
 })
 export class App {
   title = 'AI Business Advisor';

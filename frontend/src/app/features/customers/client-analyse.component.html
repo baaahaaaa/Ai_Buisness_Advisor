@@ -1,0 +1,100 @@
+<div class="container">
+  <a routerLink="/" class="back-link">← Retour à la liste</a>
+  <h2>Analyse du Client #{{ clientId }}</h2>
+
+  <div *ngIf="loading()">Analyse en cours (l'IA calcule les résultats)...</div>
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+
+  <div *ngIf="!loading() && analyse() as data" class="analyse-grid">
+
+    <div class="card">
+      <h3>🧩 Segmentation</h3>
+      <p><strong>Segment :</strong> {{ data.segmentation.segment_predit }}</p>
+      <p><strong>Sinistres (5 ans) :</strong> {{ data.segmentation.nb_sinistres }}</p>
+    </div>
+
+    <div class="card risk-card">
+  <h3>Score de Risque</h3>
+  <div class="gauge">
+    <svg viewBox="0 0 200 110" class="gauge-svg">
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#E4E8ED" stroke-width="14" stroke-linecap="round"/>
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+            [attr.stroke]="data.risque.score_risque > 60 ? '#B14C4C' : data.risque.score_risque > 30 ? '#C9793D' : '#3F7D5C'"
+            stroke-width="14" stroke-linecap="round"
+            [attr.stroke-dasharray]="251.2"
+            [attr.stroke-dashoffset]="251.2 - (data.risque.score_risque / 100) * 251.2"/>
+      <line x1="100" y1="100" x2="100" y2="35"
+            [attr.transform]="'rotate(' + riskNeedleRotation(data.risque.score_risque) + ' 100 100)'"
+            stroke="#101A2B" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="100" cy="100" r="6" fill="#101A2B"/>
+    </svg>
+    <div class="gauge-value">{{ data.risque.score_risque }}<span>/100</span></div>
+  </div>
+  <p><strong>Sinistres (5 ans) :</strong> {{ data.risque.nb_sinistres }}</p>
+  <p><strong>Retards de paiement :</strong> {{ data.risque.nb_retards }}</p>
+</div>
+
+    <div class="card">
+      <h3>💰 Pricing</h3>
+      <p><strong>Prime actuelle :</strong> {{ data.pricing.prime_actuelle ?? 'N/A' }} DT</p>
+      <p><strong>Prime recommandée :</strong> {{ data.pricing.prime_recommandee }} DT</p>
+      <p *ngIf="data.pricing.variation_pct !== null">
+        <strong>Variation :</strong>
+        <span [class.negative]="data.pricing.variation_pct < 0" [class.positive]="data.pricing.variation_pct > 0">
+          {{ data.pricing.variation_pct }}%
+        </span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>💡 Recommandations</h3>
+      <ul>
+        <li *ngFor="let rec of data.recommandations.recommandations">{{ rec }}</li>
+      </ul>
+      <p *ngIf="data.recommandations.telematics_eligible" class="highlight">
+        🔥 Éligible télématique — réduction {{ data.recommandations.telematics_potential_reduction }}
+      </p>
+    </div>
+
+    <div class="card" [class.alert-card]="data.fraude.fraude_suspecte">
+      <h3>🕵️ Fraude</h3>
+      <p><strong>Score suspicion :</strong> {{ data.fraude.score_suspicion }}/100</p>
+      <p><strong>Statut :</strong> {{ data.fraude.fraude_suspecte ? 'SUSPECTÉ ⚠️' : 'Aucune anomalie ✅' }}</p>
+      <ul>
+        <li *ngFor="let alerte of data.fraude.alertes">{{ alerte }}</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>✅ Conformité</h3>
+      <p><strong>Statut :</strong> {{ data.compliance.statut_conformite }}</p>
+      <ul>
+        <li *ngFor="let v of data.compliance.violations">{{ v }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chat-section" *ngIf="!loading()">
+    <h3>💬 Assistant IA — Posez une question sur ce client</h3>
+
+    <div class="chat-history">
+      <div *ngFor="let msg of chatHistory()" class="chat-item user">
+        <p class="chat-question"><strong>Vous :</strong> {{ msg.question }}</p>
+        <p class="chat-answer"><strong>IA :</strong> {{ msg.answer }}</p>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="question"
+        placeholder="Ex: Pourquoi le risque est-il élevé ?"
+        (keyup.enter)="askQuestion()"
+        [disabled]="chatLoading()"
+      />
+      <button (click)="askQuestion()" [disabled]="chatLoading()">
+        {{ chatLoading() ? 'Envoi...' : 'Envoyer' }}
+      </button>
+    </div>
+  </div>
+</div>
