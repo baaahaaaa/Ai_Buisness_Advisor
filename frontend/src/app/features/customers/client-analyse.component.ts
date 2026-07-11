@@ -2,13 +2,24 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ClientService } from '../../core/services/client.service';
 import { AnalyseResponse } from '../../core/models/analyse.model';
 
 @Component({
   selector: 'app-client-analyse',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [
+    CommonModule, RouterLink, FormsModule, MatCardModule,
+    MatIconModule, MatButtonModule, MatInputModule,
+    MatFormFieldModule, MatDividerModule, MatProgressBarModule
+  ],
   templateUrl: './client-analyse.component.html',
   styleUrl: './client-analyse.component.css'
 })
@@ -71,7 +82,8 @@ export class ClientAnalyseComponent implements OnInit {
       }
     });
   }
-riskNeedleRotation(score: number): number {
+
+  riskNeedleRotation(score: number): number {
     return -90 + (score / 100) * 180;
   }
 }

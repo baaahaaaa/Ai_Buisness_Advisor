@@ -1,44 +1,115 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ClientService } from '../../core/services/client.service';
 import { ClientRequest } from '../../core/models/client.model';
 
 @Component({
   selector: 'app-client-create',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, FormsModule, RouterLink, MatCardModule,
+    MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule
+  ],
   template: `
-    <div class="container">
-      <h2>Nouveau Client</h2>
-      <form (ngSubmit)="submit()" class="form">
-        <label>Nom <input [(ngModel)]="form.nom" name="nom" required /></label>
-        <label>Prenom <input [(ngModel)]="form.prenom" name="prenom" required /></label>
-        <label>Age <input type="number" [(ngModel)]="form.age" name="age" required /></label>
-        <label>Date inscription <input type="date" [(ngModel)]="form.dateInscription" name="dateInscription" required /></label>
-        <label>Anciennete (annees) <input type="number" [(ngModel)]="form.ancienneteAnnees" name="ancienneteAnnees" required /></label>
-        <label>Puissance vehicule <input type="number" [(ngModel)]="form.puissanceVehicule" name="puissanceVehicule" required /></label>
-        <label>Km annuel <input type="number" [(ngModel)]="form.kmAnnuel" name="kmAnnuel" required /></label>
-        <label>Ville <input [(ngModel)]="form.ville" name="ville" required /></label>
+    <div class="create-wrapper">
+      <div class="header">
+        <a routerLink="/customers" class="back-btn">
+          <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+          Retour aux clients
+        </a>
+        <h1 class="page-title">Ajouter un Client</h1>
+      </div>
 
-        <div class="actions">
-          <button type="submit" [disabled]="saving()">{{ saving() ? 'Enregistrement...' : 'Creer le client' }}</button>
-          <a routerLink="/customers">Annuler</a>
-        </div>
-        <p class="error" *ngIf="error()">{{ error() }}</p>
-      </form>
+      <mat-card class="form-card">
+        <mat-card-content>
+          <form (ngSubmit)="submit()" class="client-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Nom</mat-label>
+                <input matInput [(ngModel)]="form.nom" name="nom" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Prenom</mat-label>
+                <input matInput [(ngModel)]="form.prenom" name="prenom" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Age</mat-label>
+                <input matInput type="number" [(ngModel)]="form.age" name="age" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ville</mat-label>
+                <input matInput [(ngModel)]="form.ville" name="ville" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date inscription</mat-label>
+                <input matInput type="date" [(ngModel)]="form.dateInscription" name="dateInscription" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Anciennete (annees)</mat-label>
+                <input matInput type="number" [(ngModel)]="form.ancienneteAnnees" name="ancienneteAnnees" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Puissance vehicule (CV)</mat-label>
+                <input matInput type="number" [(ngModel)]="form.puissanceVehicule" name="puissanceVehicule" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Km annuel</mat-label>
+                <input matInput type="number" [(ngModel)]="form.kmAnnuel" name="kmAnnuel" required>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+                <mat-icon fontSet="material-symbols-outlined">{{ saving() ? 'sync' : 'person_add' }}</mat-icon>
+                {{ saving() ? 'Enregistrement...' : 'Creer le dossier client' }}
+              </button>
+              <a mat-button routerLink="/customers">Annuler</a>
+            </div>
+            <p class="error-msg" *ngIf="error()">{{ error() }}</p>
+          </form>
+        </mat-card-content>
+      </mat-card>
     </div>
   `,
   styles: [`
-    .container { max-width: 500px; padding: 24px 0; }
-    .form { display: flex; flex-direction: column; gap: 14px; }
-    label { display: flex; flex-direction: column; gap: 4px; font-size: 0.88rem; color: var(--ink-soft); }
-    input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; }
-    .actions { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
-    button { background: var(--ink); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-    button:disabled { background: #C7CDD5; }
-    .error { color: var(--danger); }
+    .create-wrapper { max-width: 800px; margin: 0 auto; }
+    .header { margin-bottom: 32px; }
+    .back-btn {
+      display: flex; align-items: center; gap: 8px; color: var(--ink-soft);
+      font-weight: 500; font-size: 0.9rem; margin-bottom: 16px;
+    }
+    .page-title { font-size: 2rem; margin: 0; letter-spacing: -0.02em; }
+
+    .form-card { border: 1px solid var(--border); }
+    .client-form { padding: 16px 8px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 8px; }
+    mat-form-field { width: 100%; }
+
+    .form-actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .form-actions button { height: 48px; padding: 0 24px; }
+
+    .error-msg { color: var(--danger); margin-top: 16px; font-size: 0.9rem; font-weight: 500; }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+    }
   `]
 })
 export class ClientCreateComponent {
