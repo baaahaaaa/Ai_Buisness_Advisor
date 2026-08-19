@@ -1,237 +1,201 @@
-import os
 import json
-import logging
-import sys
-from datetime import datetime, date
-from pathlib import Path
+import requests
 
-import mysql.connector
-from dotenv import load_dotenv
-from openai import OpenAI, APIError, APITimeoutError, RateLimitError
-
-sys.path.append(str(Path(__file__).parent.parent))
-
-from agents.segmentation_agent import get_segment
-from agents.risk_agent import get_risk_score
-from agents.pricing_agent import get_recommended_price
-from agents.recommendation_agent import get_recommendations
-from agents.fraud_agent import detect_fraud
-from agents.compliance_agent import check_compliance
-from db.mongo_client import save_chat_message
-
-load_dotenv()
-
-API_KEY = os.getenv("GROQ_API_KEY")
-BASE_URL = "https://api.groq.com/openai/v1"
-MODEL = "llama-3.3-70b-versatile"
-
-client_llm = OpenAI(api_key=API_KEY, base_url=BASE_URL) if API_KEY else None
-
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 3307,
-    "user": "root",
-    "password": "",
-    "database": "ai_business_advisor"
-}
-
-logging.basicConfig(
-    filename="advisor.log",
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
-
-conversation_memory = []
+from config import OLLAMA_URL, OLLAMA_MODEL as MODEL
 
 
-def add_to_memory(question, answer):
-    conversation_memory.append({
-        "question": question,
-        "answer": answer,
-        "date": datetime.now().isoformat()
-    })
-    if len(conversation_memory) > 10:
-        conversation_memory.pop(0)
+def enrich_client_data(data):
 
+    risque = data.get("risque", {})
+    segmentation = data.get("segmentation", {})
+    fraude = data.get("fraude", {})
+    compliance = data.get("compliance", {})
 
-def check_api():
-    if client_llm is None:
-        raise Exception("GROQ_API_KEY absente ou invalide.")
+    score = risque.get("score_risque", 0)
 
+    if score < 30:
+        niveau_risque = "Faible"
+    elif score < 60:
+        niveau_risque = "Modere"
+    else:
+        niveau_risque = "Eleve"
 
-def get_connection():
-    return mysql.connector.connect(**DB_CONFIG)
+    age = segmentation.get("age", 0)
+    anciennete = segmentation.get("anciennete", 0)
 
-
-def json_serial(obj):
-    if isinstance(obj, (date, datetime)):
-        return obj.isoformat()
-    raise TypeError(f"Type {type(obj)} non sérialisable")
-
-
-def get_client(client_id):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM clients WHERE client_id=%s", (client_id,))
-    row = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return row
-
-
-SYSTEM_PROMPT = """Tu es l'assistant IA d'une compagnie d'assurance automobile, destiné aux directeurs et responsables métier.
-Tu réponds UNIQUEMENT à partir des données fournies dans le contexte (résultats des agents internes : segmentation, risque, pricing, recommandation, fraude, conformité).
-Règles strictes :
-- Ne jamais inventer de chiffres ou de faits absents du contexte.
-- Si une information n'est pas disponible, dis-le clairement.
-- Réponds de manière professionnelle, concise et orientée décision business.
-- Explique le "pourquoi" quand c'est pertinent (ex: pourquoi ce score de risque, pourquoi cette prime).
-- Si le client est éligible à la télématique (boîtier connecté), mentionne-le comme une opportunité forte.
-"""
-
-
-def build_context(client_id):
-    client = get_client(client_id)
-    if client is None:
-        return None
-
-    segmentation = get_segment(client_id)
-    risk = get_risk_score(client_id)
-    pricing = get_recommended_price(client_id)
-    recommendation = get_recommendations(client_id)
-    fraud = detect_fraud(client_id)
-    compliance = check_compliance(
-        client_id=client_id,
-        age=client.get("age"),
-        prime_actuelle=pricing.get("prime_actuelle"),
-        prime_recommandee=pricing.get("prime_recommandee", 0),
-        fraude_suspecte=fraud.get("fraude_suspecte", False)
-    )
-
-    return {
-        "client": client,
-        "segmentation": segmentation,
-        "risk": risk,
-        "pricing": pricing,
-        "recommendation": recommendation,
-        "fraud": fraud,
-        "compliance": compliance
+    data["indicateurs_metier"] = {
+        "niveau_risque": niveau_risque,
+        "jeune_conducteur": age < 25,
+        "anciennete_faible": anciennete <= 2,
+        "absence_sinistre": risque.get("nb_sinistres", 0) == 0,
+        "retard_paiement": risque.get("nb_retards", 0) > 0,
+        "fraude_detectee": fraude.get("fraude_suspecte", False),
+        "client_conforme": compliance.get("statut_conformite") == "Valide"
     }
 
+    data["confidence"] = data.get("confidence", {"score": None, "niveau": "Non calcule"})
 
-def build_prompt_context(context):
-    client = context["client"]
-    risk = context["risk"]
-    pricing = context["pricing"]
-    recommendation = context["recommendation"]
-    fraud = context["fraud"]
-    compliance = context["compliance"]
-    segmentation = context["segmentation"]
-
-    return f"""
-================ CLIENT ================
-Nom : {client.get("prenom", "N/A")} {client.get("nom", "N/A")}
-Age : {client.get("age", "N/A")}
-Ville : {client.get("ville", "N/A")}
-
-================ SEGMENTATION ================
-Segment : {segmentation.get("segment_predit", "N/A")}
-
-================ RISQUE ================
-Score : {risk.get("score_risque", "N/A")}/100
-Sinistres (5 ans) : {risk.get("nb_sinistres", "N/A")}
-Retards de paiement : {risk.get("nb_retards", "N/A")}
-
-================ PRICING ================
-Prime actuelle : {pricing.get("prime_actuelle", "N/A")} DT
-Prime recommandée : {pricing.get("prime_recommandee", "N/A")} DT ({pricing.get("variation_pct", "N/A")}%)
-
-================ RECOMMANDATIONS ================
-{", ".join(recommendation.get("recommandations", []))}
-Éligible télématique : {"Oui" if recommendation.get("telematics_eligible") else "Non"}
-
-================ FRAUDE ================
-Fraude suspectée : {"Oui" if fraud.get("fraude_suspecte") else "Non"}
-Alertes : {", ".join(fraud.get("alertes", []))}
-
-================ CONFORMITE ================
-Statut : {compliance.get("statut_conformite", "N/A")}
-""".strip()
+    return data
 
 
-def build_history():
-    if not conversation_memory:
-        return "(aucun échange précédent)"
-    return "\n\n".join(
-        f"Question : {item['question']}\nRéponse : {item['answer']}"
-        for item in conversation_memory
+def build_llm_payload(data):
+    """Copie allegee de `data` pour le prompt LLM : retire le dict SHAP brut
+    (deja resume dans explication_textuelle) pour reduire le nombre de tokens
+    envoyes et donc le temps de traitement du prompt par Ollama."""
+
+    light = json.loads(json.dumps(data, ensure_ascii=False))
+    if "risque" in light and "explication" in light["risque"]:
+        del light["risque"]["explication"]
+    return light
+
+
+def ask_llm_advisor(data):
+
+    data = enrich_client_data(data)
+    llm_payload = build_llm_payload(data)
+
+    prompt = f"""Tu es un expert Assurance Automobile.
+
+Les donnees sont :
+
+{json.dumps(llm_payload, indent=2, ensure_ascii=False)}
+
+IMPORTANT :
+
+Le champ confidence est DEJA calcule. NE LE MODIFIE JAMAIS. Ne renvoie PAS confidence.
+Ne renvoie PAS analyse_metier sous forme d''objet. analyse_metier doit etre UNE PHRASE.
+Les champs "resume" et "conclusion" sont OBLIGATOIRES et ne doivent JAMAIS etre une chaine
+vide - ecris toujours au moins une phrase complete pour chacun des deux.
+Utilise UNIQUEMENT les valeurs numeriques exactes fournies ci-dessus (nb_retards, nb_sinistres,
+fraude_detectee, etc.) pour tes points forts/faibles - si nb_retards > 0, ne dis JAMAIS
+"paiement regulier" ou equivalent, c''est l''inverse qui est vrai.
+FORMAT DE SORTIE STRICT :
+Ta reponse doit commencer directement par le caractere ''{{'' et se terminer par ''}}''.
+N''ecris AUCUN texte, AUCUNE explication, AUCUN raisonnement avant ou apres le JSON.
+Pas de "Je vais analyser...", pas de titres markdown, pas de phrase d''introduction.
+Uniquement le JSON brut, rien d''autre.
+
+Retourne uniquement ce JSON :
+
+{{
+"resume":"",
+"analyse_metier":"",
+"points_forts":[
+"..."
+],
+"points_faibles":[
+"..."
+],
+"actions_recommandees":[
+"..."
+],
+"conclusion":""
+}}
+"""
+
+    response = requests.post(
+        OLLAMA_URL,
+        json={
+            "model": MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "keep_alive": "30m",
+            "options": {
+                "temperature": 0.1,
+                "num_predict": 800
+            }
+        },
+        timeout=300
     )
 
+    response.raise_for_status()
 
-def ask_llm_advisor(client_id: int, question: str) -> dict:
-    try:
-        check_api()
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    txt = response.json()["response"]
 
-    context = build_context(client_id)
-    if context is None:
-        return {"success": False, "error": "Client introuvable"}
+    txt = txt.replace("```json", "")
+    txt = txt.replace("```", "")
+    txt = txt.strip()
 
-    context_text = build_prompt_context(context)
-    history = build_history()
-
-    user_message = f"""Historique de conversation récent :
-{history}
-
-========================================
-Contexte Client :
-{context_text}
-========================================
-Question du directeur :
-{question}"""
+    start = txt.find("{")
+    end = txt.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        txt_json = txt[start:end + 1]
+    else:
+        txt_json = txt
 
     try:
-        response = client_llm.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.3,
-            max_tokens=500,
-            timeout=15
-        )
-        answer = response.choices[0].message.content
-
-        add_to_memory(question, answer)
-        logging.info(f"Client={client_id} | Question={question}")
-
-        save_chat_message(client_id, question, answer, success=True)
-
-
-        return {
-            "success": True,
-            "client_id": client_id,
-            "question": question,
-            "answer": answer,
-            "context": context
+        result = json.loads(txt_json)
+    except Exception:
+        result = {
+            "resume": "",
+            "analyse_metier": txt,
+            "points_forts": [],
+            "points_faibles": [],
+            "actions_recommandees": [],
+            "conclusion": ""
         }
 
-    except RateLimitError:
-        return {"success": False, "error": "Limite de requêtes atteinte, réessayez dans quelques instants."}
-    except APITimeoutError:
-        return {"success": False, "error": "Le service LLM a mis trop de temps à répondre."}
-    except APIError as e:
-        return {"success": False, "error": f"Erreur du service LLM : {str(e)}"}
-    except Exception as e:
-        logging.error(f"Erreur LLM: {e}")
-        return {"success": False, "error": str(e)}
+    if isinstance(result.get("analyse_metier"), dict):
+        result["analyse_metier"] = (
+            "Analyse metier generee automatiquement a partir des resultats des agents."
+        )
+
+    def clean(lst):
+        new = []
+        for x in lst:
+            if isinstance(x, str):
+                new.append(x)
+            elif isinstance(x, dict):
+                new.append(" - ".join(str(v) for v in x.values()))
+            else:
+                new.append(str(x))
+        return new
+
+    result["points_forts"] = clean(result.get("points_forts", []))
+    result["points_faibles"] = clean(result.get("points_faibles", []))
+    result["actions_recommandees"] = clean(result.get("actions_recommandees", []))
+
+    result["confidence"] = data["confidence"]
+
+    return result
 
 
-if __name__ == "__main__":
-    response = ask_llm_advisor(
-        client_id=1,
-        question="Analyse ce client et donne-moi une stratégie commerciale."
+def answer_client_question(context: dict, question: str) -> str:
+    """Repond en texte libre a une question posee par l''utilisateur, en se basant
+    sur le contexte deja calcule pour un client (segmentation, risque, pricing, etc.)."""
+
+    prompt = f"""Tu es un expert senior en assurance automobile qui repond aux questions
+d''un gestionnaire de portefeuille sur un client precis.
+
+CONTEXTE CLIENT (donnees reelles, deja calculees par les agents d''analyse) :
+{json.dumps(context, indent=2, ensure_ascii=False)}
+
+QUESTION DE L''UTILISATEUR :
+{question}
+
+INSTRUCTIONS :
+- Reponds UNIQUEMENT en texte simple, en francais, PAS de JSON, PAS de markdown.
+- Base-toi exclusivement sur les donnees du CONTEXTE CLIENT ci-dessus, ne jamais inventer de chiffre.
+- Dans le champ "explication" (valeurs SHAP), un nombre POSITIF augmente TOUJOURS le risque,
+  un nombre NEGATIF le REDUIT TOUJOURS.
+- Reponse claire et concise, 2 a 5 phrases maximum.
+"""
+
+    response = requests.post(
+        OLLAMA_URL,
+        json={
+            "model": MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "keep_alive": "30m",
+            "options": {
+                "temperature": 0.3,
+                "num_predict": 400
+            }
+        },
+        timeout=300
     )
-    print(json.dumps(response, indent=4, ensure_ascii=False, default=json_serial))
+    response.raise_for_status()
+
+    ollama_data = response.json()
+    return ollama_data.get("response", "").strip()

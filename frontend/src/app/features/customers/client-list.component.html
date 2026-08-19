@@ -1,51 +1,129 @@
-<div class="container">
-  <div class="header-row">
-    <div>
-      <h2>Portefeuille Clients</h2>
-      <p class="subtitle">{{ filteredClients().length }} / {{ allClients().length }} dossiers</p>
+<div class="list-wrapper">
+  <div class="list-header">
+    <div class="title-group">
+      <h1 class="page-title">Client Portfolio</h1>
+      <p class="page-subtitle">Manage and analyze your insurance policy holders</p>
     </div>
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Rechercher (nom, ville, ID)..."
-      [value]="search()"
-      (input)="onSearchChange($any($event.target).value)" />
+    <div class="header-actions">
+      <div class="search-container">
+        <mat-icon fontSet="material-symbols-outlined">search</mat-icon>
+        <input type="text" (input)="onSearchChange($event)" placeholder="Search clients, ID, or address...">
+      </div>
+      <button mat-flat-button class="premium-gradient ai-glow add-btn" routerLink="/customers/nouveau">
+        <mat-icon fontSet="material-symbols-outlined">add</mat-icon> 
+        <span>New Client</span>
+      </button>
+    </div>
   </div>
 
-  <div *ngIf="loading()">Chargement...</div>
-  <div *ngIf="error()" class="error">{{ error() }}</div>
+  <div class="stats-mini-grid">
+    <div class="mini-stat">
+      <span class="label">Total Holders</span>
+      <span class="value">{{ filteredClients().length }}</span>
+    </div>
+    <div class="mini-stat">
+      <span class="label">Avg Risk Score</span>
+      <span class="value">Low</span>
+    </div>
+    <div class="mini-stat">
+      <span class="label">Active Policies</span>
+      <span class="value">94%</span>
+    </div>
+  </div>
 
-  <table *ngIf="!loading() && displayedClients().length > 0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Prenom</th>
-        <th>Age</th>
-        <th>Ville</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let client of displayedClients()">
-        <td>{{ client.clientId }}</td>
-        <td>{{ client.nom }}</td>
-        <td>{{ client.prenom }}</td>
-        <td>{{ client.age }}</td>
-        <td><span class="ville-chip">{{ client.ville }}</span></td>
-        <td>
-          <a class="analyser" [routerLink]="['/customers/analyse', client.clientId]">Analyser</a>
-          <button (click)="deleteClient(client.clientId)">Supprimer</button>
+  <div class="table-container mat-elevation-z0">
+    <div class="loading-shade" *ngIf="loading()">
+      <div class="loader-placeholder">Chargement...</div>
+    </div>
+
+    <table mat-table [dataSource]="displayedClients()" class="full-width-table">
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Client ID </th>
+        <td mat-cell *matCellDef="let client" class="mono-cell"> 
+          <span class="id-badge">#{{client.id}}</span>
+        </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Holder Name </th>
+        <td mat-cell *matCellDef="let client">
+          <div class="name-cell">
+            <div class="avatar-box" [style.background]="getAvatarColor(client)">
+              {{client.firstName[0]}}{{client.lastName[0]}}
+            </div>
+            <div class="name-info">
+              <span class="full-name">{{client.firstName}} {{client.lastName}}</span>
+              <span class="sub-info">Premium Member</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Age Column -->
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef> Age </th>
+        <td mat-cell *matCellDef="let client"> {{getAge(client.birthDate)}} ans </td>
+      </ng-container>
+
+      <!-- Address Column -->
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef> Localisation </th>
+        <td mat-cell *matCellDef="let client">
+          <mat-chip-set>
+            <mat-chip class="ville-chip">{{client.address}}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let client">
+          <div class="action-buttons">
+            <a mat-flat-button class="analyze-btn" [routerLink]="['/customers/analyse', client.id]">
+              <mat-icon fontSet="material-symbols-outlined">query_stats</mat-icon> 
+              <span>Analyze</span>
+            </a>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="more-btn">
+              <mat-icon fontSet="material-symbols-outlined">more_horiz</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" class="premium-menu">
+              <button mat-menu-item [routerLink]="['/customers/edit', client.id]">
+                <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                <span>Edit Profile</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteClient(client.id)" class="delete-item">
+                <mat-icon fontSet="material-symbols-outlined">delete_outline</mat-icon>
+                <span>Remove Client</span>
+              </button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="client-row"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty-cell" colspan="5">
+          <div class="empty-state" *ngIf="!loading()">
+            <mat-icon fontSet="material-symbols-outlined">search_off</mat-icon>
+            <p>Aucun client ne correspond a votre recherche.</p>
+          </div>
         </td>
       </tr>
-    </tbody>
-  </table>
+    </table>
 
-  <div class="pagination" *ngIf="!loading()">
-    <button (click)="previousPage()" [disabled]="currentPage() === 1">Precedent</button>
-    <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
-    <button (click)="nextPage()" [disabled]="currentPage() === totalPages()">Suivant</button>
+    <mat-paginator
+      [length]="filteredClients().length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="handlePageEvent($event)"
+      aria-label="Selectionner la page">
+    </mat-paginator>
   </div>
-
-  <p *ngIf="!loading() && displayedClients().length === 0">Aucun client trouve.</p>
 </div>

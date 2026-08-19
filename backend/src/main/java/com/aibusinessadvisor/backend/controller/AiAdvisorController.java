@@ -2,6 +2,9 @@ package com.aibusinessadvisor.backend.controller;
 
 import com.aibusinessadvisor.backend.service.AiServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -52,5 +55,23 @@ public class AiAdvisorController {
     @GetMapping("/health")
     public Map getHealth() {
         return aiServiceClient.getHealth();
+    }
+
+    @GetMapping("/report/client/{clientId}/pdf")
+    public ResponseEntity<byte[]> getReportClientPdf(@PathVariable Integer clientId) {
+        byte[] pdf = aiServiceClient.getReportClientPdf(clientId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=rapport_client_" + clientId + ".pdf")
+                .body(pdf);
+    }
+
+    @GetMapping("/report/global/pdf")
+    public ResponseEntity<byte[]> getReportGlobalPdf() {
+        byte[] pdf = aiServiceClient.getReportGlobalPdf();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=rapport_global.pdf")
+                .body(pdf);
     }
 }

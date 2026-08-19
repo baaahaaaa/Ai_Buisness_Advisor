@@ -8,13 +8,14 @@ import { importProvidersFrom } from '@angular/core';
 import { routes } from './app.routes';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([loadingInterceptor, errorInterceptor])
+      withInterceptors([authInterceptor, loadingInterceptor, errorInterceptor])
     ),
     provideAnimationsAsync(),
     importProvidersFrom(MatSnackBarModule)

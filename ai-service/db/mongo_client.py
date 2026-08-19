@@ -1,11 +1,10 @@
 from pymongo import MongoClient
 from datetime import datetime
 
-MONGO_URI = "mongodb://localhost:27017/"
-DB_NAME = "ai_business_advisor_mongo"
+from config import MONGO_URI, MONGO_DB_NAME
 
 client = MongoClient(MONGO_URI)
-db = client[DB_NAME]
+db = client[MONGO_DB_NAME]
 chat_history_collection = db["chat_history"]
 
 

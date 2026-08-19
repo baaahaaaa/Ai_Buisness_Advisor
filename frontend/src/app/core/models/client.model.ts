@@ -1,22 +1,20 @@
 export interface Client {
-  clientId: number;
-  nom: string;
-  prenom: string;
-  age: number;
-  dateInscription: string;
-  ancienneteAnnees: number;
-  puissanceVehicule: number;
-  kmAnnuel: number;
-  ville: string;
+  id: number;
+  firstName: string;
+  lastName: string;
+  gender: 'M' | 'F';
+  birthDate: string;
+  phone: string;
+  email: string;
+  address: string;
 }
 
 export interface ClientRequest {
-  nom: string;
-  prenom: string;
-  age: number;
-  dateInscription: string;
-  ancienneteAnnees: number;
-  puissanceVehicule: number;
-  kmAnnuel: number;
-  ville: string;
+  firstName: string;
+  lastName: string;
+  gender: 'M' | 'F';
+  birthDate: string;
+  phone: string;
+  email: string;
+  address: string;
 }

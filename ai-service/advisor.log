@@ -74,3 +74,70 @@
 2026-07-09 13:00:55,804 INFO package: mysql.connector.plugins
 2026-07-09 13:00:55,824 INFO plugin_name: mysql_native_password
 2026-07-09 13:00:55,876 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-11 12:38:12,065 INFO package: mysql.connector.plugins
+2026-07-11 12:38:12,066 INFO plugin_name: mysql_native_password
+2026-07-11 12:38:12,271 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-07-11 12:41:25,736 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 12:41:26,249 INFO Client=11 | Question=le risque d'avoir un accident pour ce client ?
+2026-07-11 12:41:56,588 ERROR Erreur LLM: localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 6a52189b801d8a50665eb161, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-07-11 12:50:36,933 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 12:50:36,935 INFO Client=11 | Question=test
+2026-07-11 12:51:07,313 ERROR Erreur LLM: localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 6a52189b801d8a50665eb161, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-07-11 12:59:52,387 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 12:59:52,389 INFO Client=11 | Question=Pourquoi le risque est-il élevé
+2026-07-11 13:02:21,124 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 13:02:21,126 INFO Client=8 | Question=pourquoi le risque est elevee?
+2026-07-11 13:02:31,662 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 13:02:31,664 INFO Client=8 | Question=que faut il faire ?
+2026-07-11 13:03:04,132 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 13:03:04,133 INFO Client=8 | Question=c'est quoi Installation d'un boîtier télématique
+2026-07-11 13:04:57,556 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-11 13:04:57,559 INFO Client=5002 | Question=pourquoi la tarifcation est 700 dt
+2026-08-02 18:41:41,165 INFO package: mysql.connector.plugins
+2026-08-02 18:41:41,165 INFO plugin_name: mysql_native_password
+2026-08-02 18:41:41,166 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-03 14:16:42,009 INFO package: mysql.connector.plugins
+2026-08-03 14:16:42,010 INFO plugin_name: mysql_native_password
+2026-08-03 14:16:42,020 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-03 14:20:48,724 INFO package: mysql.connector.plugins
+2026-08-03 14:20:48,724 INFO plugin_name: mysql_native_password
+2026-08-03 14:20:48,725 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-03 14:24:29,749 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 14:24:29,989 INFO Client=1609 | Question=Explique le score de risque
+2026-08-03 14:25:00,312 ERROR Erreur LLM: localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 6a708799ab6e1ab809f82a75, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-08-03 14:26:56,871 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 14:26:56,874 INFO Client=1609 | Question=Explique le score de risque
+2026-08-03 14:27:27,257 ERROR Erreur LLM: localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 6a708799ab6e1ab809f82a75, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-08-03 14:32:03,976 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 14:32:03,979 INFO Client=1609 | Question=Explique le score de risque
+2026-08-03 14:32:34,359 ERROR Erreur LLM: localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 30s, Topology Description: <TopologyDescription id: 6a708799ab6e1ab809f82a75, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [WinError 10061] Aucune connexion n’a pu être établie car l’ordinateur cible l’a expressément refusée (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2026-08-03 14:55:26,888 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 14:55:26,891 INFO Client=1609 | Question=Explique le score de risque
+2026-08-03 15:02:23,577 INFO package: mysql.connector.plugins
+2026-08-03 15:02:23,578 INFO plugin_name: mysql_native_password
+2026-08-03 15:02:23,579 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-03 15:02:29,626 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 15:02:29,640 INFO Client=1609 | Question=Explique le score de risque
+2026-08-03 15:04:28,207 INFO HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-08-03 15:04:28,208 INFO Client=1609 | Question=Génère un résumé exécutif pour ce client
+2026-08-04 14:09:15,582 INFO package: mysql.connector.plugins
+2026-08-04 14:09:15,583 INFO plugin_name: mysql_native_password
+2026-08-04 14:09:15,586 INFO package: mysql.connector.plugins
+2026-08-04 14:09:15,586 INFO plugin_name: mysql_native_password
+2026-08-04 14:09:15,631 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-04 14:09:15,632 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-04 14:30:53,209 INFO package: mysql.connector.plugins
+2026-08-04 14:30:53,210 INFO plugin_name: mysql_native_password
+2026-08-04 14:30:53,211 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-04 14:41:32,753 INFO package: mysql.connector.plugins
+2026-08-04 14:41:32,753 INFO plugin_name: mysql_native_password
+2026-08-04 14:41:32,754 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-05 12:25:37,277 INFO package: mysql.connector.plugins
+2026-08-05 12:25:37,277 INFO plugin_name: mysql_native_password
+2026-08-05 12:25:37,346 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-05 12:31:47,318 INFO package: mysql.connector.plugins
+2026-08-05 12:31:47,320 INFO plugin_name: mysql_native_password
+2026-08-05 12:31:47,322 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin
+2026-08-05 12:34:33,858 INFO package: mysql.connector.plugins
+2026-08-05 12:34:33,859 INFO plugin_name: mysql_native_password
+2026-08-05 12:34:33,860 INFO AUTHENTICATION_PLUGIN_CLASS: MySQLNativePasswordAuthPlugin

@@ -1,28 +1,78 @@
-version: '3.8'
-
-services:
+﻿services:
   mysql:
     image: mysql:8.0
     container_name: ai-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ai_business_advisor
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - mysql-data:/var/lib/mysql
 
+  mongo:
+    image: mongo:7
+    container_name: ai-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ai-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=30m
+
+  backend:
+    build: ./backend
+    container_name: ai-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ai_business_advisor
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - mysql
+
   ai-service:
-    build: ./ai-service
+    build:
+      context: ./ai-service
+      dockerfile: DockerFile
     container_name: ai-service
     ports:
       - "8000:8000"
     environment:
-      - XAI_API_KEY=${XAI_API_KEY}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=ai_business_advisor
+      - MONGO_URI=mongodb://mongo:27017/
+      - MONGO_DB_NAME=ai_business_advisor_mongo
+      - OLLAMA_URL=http://ollama:11434/api/generate
+      - OLLAMA_MODEL=llama3.1:8b
     depends_on:
       - mysql
+      - mongo
+      - ollama
     volumes:
       - ./ai-service:/app
 
+  frontend:
+    build: ./frontend
+    container_name: ai-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
 volumes:
   mysql-data:
+  mongo-data:
+  ollama-data:

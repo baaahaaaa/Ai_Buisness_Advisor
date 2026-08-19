@@ -1,0 +1,22 @@
+# Secrets - ne doivent jamais ?tre copi?s dans l'image Docker
+.env
+.env.*
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+
+# Donn?es locales g?n?r?es ? l'ex?cution (pas n?cessaires dans l'image)
+reports/
+*.log
+
+# Git / ?diteurs
+.git/
+.gitignore
+.vscode/
+.idea/

@@ -1,0 +1,17 @@
+# Secrets - ne doivent jamais etre commites
+.env
+.env.*
+*.env
+
+# Fichiers de test generes a la racine pendant le developpement
+*.pdf
+verify_final.py
+
+# OS / editeurs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log

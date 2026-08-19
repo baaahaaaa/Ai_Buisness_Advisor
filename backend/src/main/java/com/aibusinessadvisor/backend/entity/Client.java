@@ -7,47 +7,54 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Entity
-@Table(name = "clients")
+@Table(name = "client")
 @Data
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "client_id")
-    private Integer clientId;
+    private Integer id;
 
-    private String nom;
-    private String prenom;
-    private Integer age;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
 
-    @Column(name = "date_inscription")
-    private LocalDate dateInscription;
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
 
-    @Column(name = "anciennete_annees")
-    private Integer ancienneteAnnees;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
 
-    @Column(name = "puissance_vehicule")
-    private Integer puissanceVehicule;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
-    @Column(name = "km_annuel")
-    private Integer kmAnnuel;
+    private String phone;
 
-    private String ville;
+    @Column(unique = true)
+    private String email;
+
+    private String address;
 
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Sinistre> sinistres;
+    @Column(name = "updated_at", updatable = false, insertable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Paiement> paiements;
+    private List<Vehicle> vehicles;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Police> polices;
+    private List<Policy> policies;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<AgentResult> agentResults;
+
+    public enum Gender {
+        M, F
+    }
 }

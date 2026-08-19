@@ -8,13 +8,7 @@ from sqlalchemy import create_engine, text
 # Ajoute le chemin parent pour les imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 3307,
-    "user": "root",
-    "password": "",
-    "database": "ai_business_advisor"
-}
+from config import DB_CONFIG
 
 engine = create_engine(
     f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
@@ -25,21 +19,24 @@ engine = create_engine(
 
 
 def get_global_kpis():
-    """KPIs globaux"""
+    """KPIs globaux (schéma v2)"""
     queries = {
-        "total_clients": "SELECT COUNT(*) as total FROM clients",
-        "avg_age": "SELECT ROUND(AVG(age), 1) as avg_age FROM clients",
-        "total_sinistres": "SELECT COUNT(*) as total FROM sinistres",
-        "avg_prime": "SELECT ROUND(AVG(prime_actuelle), 2) as avg_prime FROM polices",
+        "total_clients": "SELECT COUNT(*) AS total FROM client",
+        "avg_age": "SELECT ROUND(AVG(TIMESTAMPDIFF(YEAR, birth_date, CURDATE())), 1) AS avg_age FROM client",
+        "total_sinistres": "SELECT COUNT(*) AS total FROM claim",
+        "avg_prime": "SELECT ROUND(AVG(premium), 2) AS avg_prime FROM policy",
         "retard_rate": """
-            SELECT ROUND(COUNT(CASE WHEN statut = 'retard' THEN 1 END) * 100.0 / COUNT(*), 2) as taux
-            FROM paiements
+            SELECT ROUND(COUNT(CASE WHEN status = 'LATE' THEN 1 END) * 100.0 / COUNT(*), 2) AS taux
+            FROM payment
         """,
         "fraude_suspecte": """
-            SELECT COUNT(DISTINCT client_id) as total 
-            FROM sinistres 
-            GROUP BY client_id 
-            HAVING COUNT(*) >= 3
+            SELECT COUNT(*) AS total FROM (
+                SELECT p.client_id
+                FROM claim c
+                JOIN policy p ON p.id = c.policy_id
+                GROUP BY p.client_id
+                HAVING COUNT(*) >= 3
+            ) t
         """
     }
 
@@ -48,7 +45,7 @@ def get_global_kpis():
         try:
             df = pd.read_sql(text(q), engine)
             kpis[key] = float(df.iloc[0, 0]) if not df.empty else 0
-        except:
+        except Exception:
             kpis[key] = 0
 
     return {
@@ -64,18 +61,18 @@ def get_global_kpis():
 
 
 def get_segment_distribution():
-    """Distribution des segments par tranche d'âge"""
+    """Distribution des segments par tranche d'âge (schéma v2)"""
     query = text("""
-        SELECT 
-            CASE 
-                WHEN age < 25 THEN 'Jeune'
-                WHEN age BETWEEN 25 AND 45 THEN 'Famille'
-                WHEN age BETWEEN 46 AND 60 THEN 'Professionnel'
+        SELECT
+            CASE
+                WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) < 25 THEN 'Jeune'
+                WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 25 AND 45 THEN 'Famille'
+                WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 46 AND 60 THEN 'Professionnel'
                 ELSE 'Senior'
-            END as segment,
-            COUNT(*) as nombre,
-            ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 1) as pourcentage
-        FROM clients
+            END AS segment,
+            COUNT(*) AS nombre,
+            ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 1) AS pourcentage
+        FROM client
         GROUP BY segment
     """)
     df = pd.read_sql(query, engine)
@@ -83,44 +80,49 @@ def get_segment_distribution():
 
 
 def analyze_sinistres_by_segment():
-    """Analyse détaillée des sinistres par segment"""
+    """Analyse détaillée des sinistres par segment (schéma v2 : claim -> policy -> client)"""
     query = text("""
         WITH client_segments AS (
-            SELECT 
-                c.client_id,
-                CASE 
-                    WHEN c.age < 25 THEN 'Jeune'
-                    WHEN c.age BETWEEN 25 AND 45 THEN 'Famille'
-                    WHEN c.age BETWEEN 46 AND 60 THEN 'Professionnel'
+            SELECT
+                c.id AS client_id,
+                CASE
+                    WHEN TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) < 25 THEN 'Jeune'
+                    WHEN TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) BETWEEN 25 AND 45 THEN 'Famille'
+                    WHEN TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) BETWEEN 46 AND 60 THEN 'Professionnel'
                     ELSE 'Senior'
-                END as segment
-            FROM clients c
+                END AS segment
+            FROM client c
+        ),
+        claims_with_client AS (
+            SELECT cl.id AS claim_id, cl.amount, p.client_id
+            FROM claim cl
+            JOIN policy p ON p.id = cl.policy_id
         )
-        SELECT 
+        SELECT
             cs.segment,
-            COUNT(s.sinistre_id) as nombre_sinistres,
-            ROUND(AVG(s.montant), 2) as montant_moyen,
-            ROUND(SUM(s.montant), 2) as montant_total,
-            COUNT(DISTINCT cs.client_id) as clients_concernes,
-            ROUND(COUNT(s.sinistre_id) * 100.0 / SUM(COUNT(s.sinistre_id)) OVER (), 1) as pourcentage
+            COUNT(cw.claim_id) AS nombre_sinistres,
+            ROUND(AVG(cw.amount), 2) AS montant_moyen,
+            ROUND(SUM(cw.amount), 2) AS montant_total,
+            COUNT(DISTINCT cs.client_id) AS clients_concernes,
+            ROUND(COUNT(cw.claim_id) * 100.0 / SUM(COUNT(cw.claim_id)) OVER (), 1) AS pourcentage
         FROM client_segments cs
-        LEFT JOIN sinistres s ON cs.client_id = s.client_id
+        LEFT JOIN claims_with_client cw ON cw.client_id = cs.client_id
         GROUP BY cs.segment
         ORDER BY nombre_sinistres DESC
     """)
-    
+
     df = pd.read_sql(query, engine)
-    
+
     result = {
         "sinistres_par_segment": df.to_dict(orient="records"),
         "insights": []
     }
-    
+
     for _, row in df.iterrows():
         result["insights"].append(
             f"{row['segment']}: {int(row['nombre_sinistres'])} sinistres ({row['pourcentage']}%) - Montant moyen {row['montant_moyen']} DT"
         )
-    
+
     return result
 
 

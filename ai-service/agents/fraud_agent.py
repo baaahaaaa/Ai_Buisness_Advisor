@@ -1,25 +1,26 @@
 import mysql.connector
 from datetime import datetime
 
-DB_CONFIG = {
-    "host": "localhost", "port": 3307,
-    "user": "root", "password": "",
-    "database": "ai_business_advisor"
-}
+from config import DB_CONFIG
 
-# Connexion réutilisable
+
 def get_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
 
-def load_client_sinistres(client_id: int):
+def load_client_claims(client_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT sinistre_id, date_sinistre, montant, type_sinistre
-        FROM sinistres
-        WHERE client_id = %s
-        ORDER BY date_sinistre
+    SELECT
+        c.claim_date,
+        c.amount,
+        c.claim_type
+    FROM claim c
+    JOIN policy p
+        ON p.id = c.policy_id
+    WHERE p.client_id = %s
+    ORDER BY c.claim_date
     """, (client_id,))
     rows = cursor.fetchall()
     cursor.close()
@@ -27,11 +28,13 @@ def load_client_sinistres(client_id: int):
     return rows
 
 
-def load_client_info(client_id: int):
+def load_client(client_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT date_inscription FROM clients WHERE client_id = %s
+    SELECT created_at
+    FROM client
+    WHERE id = %s
     """, (client_id,))
     row = cursor.fetchone()
     cursor.close()
@@ -39,44 +42,33 @@ def load_client_info(client_id: int):
     return row
 
 
-def detect_fraud(client_id: int) -> dict:
-    sinistres = load_client_sinistres(client_id)
-    client_info = load_client_info(client_id)
+def detect_fraud(client_id):
+    claims = load_client_claims(client_id)
+    client = load_client(client_id)
 
-    if client_info is None:
+    if client is None:
         return {"error": "client introuvable"}
 
+    score = 0
     alertes = []
-    score_suspicion = 0
 
-    if len(sinistres) >= 3:
-        dates = [s["date_sinistre"] for s in sinistres]
-        ecart_jours = (max(dates) - min(dates)).days
-        if ecart_jours > 0 and ecart_jours < 180:
-            alertes.append("Fréquence de sinistres anormalement élevée sur une courte période")
-            score_suspicion += 40
+    if len(claims) >= 3:
+        dates = [c["claim_date"] for c in claims]
+        if (max(dates) - min(dates)).days < 180:
+            score += 40
+            alertes.append("Beaucoup de sinistres sur une courte periode")
 
-    for s in sinistres:
-        if float(s["montant"]) > 4000:
-            alertes.append(f"Sinistre à montant élevé détecté ({s['montant']} DT, {s['type_sinistre']})")
-            score_suspicion += 20
+    for c in claims:
+        if float(c["amount"]) > 4000:
+            score += 20
+            alertes.append("Montant de sinistre eleve")
             break
 
-    date_inscription = client_info["date_inscription"]
-    for s in sinistres:
-        jours_depuis_inscription = (s["date_sinistre"] - date_inscription).days
-        if 0 <= jours_depuis_inscription < 30:
-            alertes.append("Sinistre déclaré moins de 30 jours après la souscription")
-            score_suspicion += 25
-            break
-
-    score_suspicion = min(score_suspicion, 100)
-    fraude_suspecte = score_suspicion >= 50
+    score = min(score, 100)
 
     return {
         "client_id": client_id,
-        "nb_sinistres_analyses": len(sinistres),
-        "score_suspicion": score_suspicion,
-        "fraude_suspecte": fraude_suspecte,
-        "alertes": alertes if alertes else ["Aucune anomalie détectée"]
+        "score_suspicion": score,
+        "fraude_suspecte": score >= 50,
+        "alertes": alertes
     }

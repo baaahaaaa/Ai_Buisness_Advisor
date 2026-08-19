@@ -1,6 +1,7 @@
 package com.aibusinessadvisor.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -57,5 +58,17 @@ public class AiServiceClient {
     public Map getHealth() {
         String url = aiServiceUrl.replace("/api", "") + "/";
         return restTemplate.getForObject(url, Map.class);
+    }
+
+    public byte[] getReportClientPdf(Integer clientId) {
+        String url = aiServiceUrl + "/report/client/" + clientId + "/pdf";
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
+        return response.getBody();
+    }
+
+    public byte[] getReportGlobalPdf() {
+        String url = aiServiceUrl + "/report/global/pdf";
+        ResponseEntity<byte[]> response = restTemplate.getForEntity(url, byte[].class);
+        return response.getBody();
     }
 }

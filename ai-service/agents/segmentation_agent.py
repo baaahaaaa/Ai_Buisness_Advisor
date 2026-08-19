@@ -5,15 +5,8 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import joblib
 
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 3307,
-    "user": "root",
-    "password": "",
-    "database": "ai_business_advisor"
-}
+from config import DB_CONFIG
 
-# SQLAlchemy Engine (réutilisable + performant)
 engine = create_engine(
     f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
     f"{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}",
@@ -26,18 +19,22 @@ SCALER_PATH = "models/segmentation_scaler.pkl"
 
 
 def load_clients_data():
-    """Requête optimisée"""
     query = text("""
-        SELECT 
-            c.client_id, 
-            c.age, 
-            c.anciennete_annees, 
-            c.puissance_vehicule, 
-            c.km_annuel,
-            COUNT(s.sinistre_id) AS nb_sinistres
-        FROM clients c
-        LEFT JOIN sinistres s ON c.client_id = s.client_id
-        GROUP BY c.client_id, c.age, c.anciennete_annees, c.puissance_vehicule, c.km_annuel
+        SELECT
+            c.id AS client_id,
+            TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) AS age,
+            TIMESTAMPDIFF(YEAR, p.start_date, CURDATE()) AS anciennete_annees,
+            v.power AS puissance_vehicule,
+            v.annual_mileage AS km_annuel,
+            COALESCE(cl.nb_sinistres, 0) AS nb_sinistres
+        FROM client c
+        JOIN vehicle v ON v.client_id = c.id
+        JOIN policy p ON p.client_id = c.id AND p.vehicle_id = v.id
+        LEFT JOIN (
+            SELECT policy_id, COUNT(*) AS nb_sinistres
+            FROM claim
+            GROUP BY policy_id
+        ) cl ON cl.policy_id = p.id
     """)
     df = pd.read_sql(query, engine)
     return df
@@ -50,14 +47,13 @@ def train_segmentation_model():
     scaler = StandardScaler()
     X = scaler.fit_transform(features)
 
-    kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+    kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
     kmeans.fit(X)
 
     os.makedirs("models", exist_ok=True)
     joblib.dump(kmeans, MODEL_PATH)
     joblib.dump(scaler, SCALER_PATH)
 
-    print("✅ Modèle de segmentation entraîné et sauvegardé.")
     return kmeans, scaler
 
 
@@ -78,10 +74,10 @@ def get_segment(client_id: int) -> dict:
     X = scaler.transform(features)
     cluster_id = int(kmeans.predict(X)[0])
 
-    cluster_names = {0: "Famille", 1: "Jeune", 2: "Professionnel", 3: "Senior"}
-
     return {
         "client_id": client_id,
-        "segment_predit": cluster_names.get(cluster_id, "Inconnu"),
+        "segment": cluster_id,
+        "age": int(client_row["age"].values[0]),
+        "anciennete": int(client_row["anciennete_annees"].values[0]),
         "nb_sinistres": int(client_row["nb_sinistres"].values[0])
     }

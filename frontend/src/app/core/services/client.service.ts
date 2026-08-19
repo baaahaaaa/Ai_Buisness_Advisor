@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Client, ClientRequest } from '../models/client.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
-  private baseUrl = 'http://localhost:8080/api/clients';
-  private advisorUrl = 'http://localhost:8080/api/advisor';
+  private baseUrl = `${environment.apiUrl}/api/clients`;
+  private advisorUrl = `${environment.apiUrl}/api/advisor`;
 
   constructor(private http: HttpClient) {}
 
@@ -46,5 +47,27 @@ export class ClientService {
 
   getDashboard(): Observable<any> {
     return this.http.get<any>(`${this.advisorUrl}/dashboard`);
+  }
+
+  // --- Rapports (Sprint 9) ---
+
+  getReportClientJson(id: number): Observable<any> {
+    return this.http.get<any>(`${this.advisorUrl}/report/client/${id}`);
+  }
+
+  getReportGlobalJson(): Observable<any> {
+    return this.http.get<any>(`${this.advisorUrl}/report/global`);
+  }
+
+  downloadReportClientPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.advisorUrl}/report/client/${id}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+
+  downloadReportGlobalPdf(): Observable<Blob> {
+    return this.http.get(`${this.advisorUrl}/report/global/pdf`, {
+      responseType: 'blob'
+    });
   }
 }
