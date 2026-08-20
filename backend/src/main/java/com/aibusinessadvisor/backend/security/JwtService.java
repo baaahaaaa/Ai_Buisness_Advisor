@@ -15,8 +15,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
-    @org.springframework.beans.factory.annotation.Value("${application.security.jwt.secret-key:614E645267556B58703273357638792F423F4528482B4D6251655468576D5A71}")
-    private String secretKey;
+@org.springframework.beans.factory.annotation.Value("${application.security.jwt.secret-key}")    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

@@ -9,6 +9,12 @@
       - "3308:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 60s
 
   mongo:
     image: mongo:7
@@ -17,6 +23,12 @@
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
 
   ollama:
     image: ollama/ollama:latest
@@ -27,6 +39,12 @@
       - ollama-data:/root/.ollama
     environment:
       - OLLAMA_KEEP_ALIVE=30m
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
 
   backend:
     build: ./backend
@@ -37,8 +55,11 @@
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ai_business_advisor
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - AI_SERVICE_URL=http://ai-service:8000/api
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   ai-service:
     build:
@@ -57,10 +78,14 @@
       - MONGO_DB_NAME=ai_business_advisor_mongo
       - OLLAMA_URL=http://ollama:11434/api/generate
       - OLLAMA_MODEL=llama3.1:8b
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     depends_on:
-      - mysql
-      - mongo
-      - ollama
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     volumes:
       - ./ai-service:/app
 
