@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Response
 from pydantic import BaseModel
 import mysql.connector
-
+from fastapi import Depends
+from auth import verify_token
 from config import DB_CONFIG
 from agents.segmentation_agent import get_segment
 from agents.risk_agent import get_risk_score
@@ -49,7 +50,7 @@ def save_analysis_result(client_id, segmentation, risk, pricing, recommendation,
         return False
 
 
-@router.get("/analyse/{client_id}")
+@router.get("/analyse/{client_id}", dependencies=[Depends(verify_token)])
 def analyse_client(client_id: int):
     context = build_client_context(client_id)
 
@@ -83,7 +84,7 @@ def analyse_client(client_id: int):
     }
 
 
-@router.post("/chat/{client_id}")
+@router.post("/chat/{client_id}", dependencies=[Depends(verify_token)])
 def chat_with_advisor(client_id: int, request: ChatRequest):
     context = build_client_context(client_id)
 
@@ -111,7 +112,7 @@ def get_dashboard():
     return analyze_data()
 
 
-@router.get("/report/client/{client_id}")
+@router.get("/report/client/{client_id}", dependencies=[Depends(verify_token)])
 def get_client_report(client_id: int):
     return generate_report(client_id)
 
@@ -121,7 +122,7 @@ def get_global_report():
     return generate_report()
 
 
-@router.get("/report/client/{client_id}/pdf")
+@router.get("/report/client/{client_id}/pdf", dependencies=[Depends(verify_token)])
 def get_client_report_pdf(client_id: int):
     pdf_bytes = generate_report_pdf(client_id)
     return Response(
@@ -133,7 +134,7 @@ def get_client_report_pdf(client_id: int):
     )
 
 
-@router.get("/report/global/pdf")
+@router.get("/report/global/pdf", dependencies=[Depends(verify_token)])
 def get_global_report_pdf():
     pdf_bytes = generate_report_pdf()
     return Response(
@@ -145,13 +146,13 @@ def get_global_report_pdf():
     )
 
 
-@router.post("/report/save/client/{client_id}")
+@router.post("/report/save/client/{client_id}", dependencies=[Depends(verify_token)])
 def save_client_report(client_id: int):
     filename = save_report(client_id)
     return {"status": "success", "filename": filename}
 
 
-@router.post("/report/save/global")
+@router.post("/report/save/global", dependencies=[Depends(verify_token)])
 def save_global_report():
     filename = save_report()
     return {"status": "success", "filename": filename}
@@ -161,7 +162,7 @@ def save_global_report():
 def health_check():
     return {"status": "healthy"}
 
-@router.get("/historique/{client_id}")
+@router.get("/historique/{client_id}", dependencies=[Depends(verify_token)])
 def get_historique(client_id: int):
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -181,7 +182,7 @@ def get_historique(client_id: int):
         return {"error": str(e)}
 
 
-@router.get("/chat/{client_id}/historique")
+@router.get("/chat/{client_id}/historique", dependencies=[Depends(verify_token)])
 def get_chat_historique(client_id: int, limit: int = 20):
     return {
         "client_id": client_id,
