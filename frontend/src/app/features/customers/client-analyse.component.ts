@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ClientService } from '../../core/services/client.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { AnalyseResponse } from '../../core/models/analyse.model';
 
 @Component({
@@ -33,9 +34,12 @@ export class ClientAnalyseComponent implements OnInit {
   chatHistory = signal<{ question: string; answer: string }[]>([]);
   chatLoading = signal(false);
 
+  exportLoading = signal(false);
+
   constructor(
     private route: ActivatedRoute,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +82,27 @@ export class ClientAnalyseComponent implements OnInit {
           { question: q, answer: 'Erreur : impossible de contacter l\'assistant IA.' }
         ]);
         this.chatLoading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  exportReport(): void {
+    this.exportLoading.set(true);
+    this.clientService.downloadReportClientPdf(this.clientId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rapport_client_${this.clientId}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.exportLoading.set(false);
+        this.notificationService.success('Rapport PDF téléchargé');
+      },
+      error: (err) => {
+        this.exportLoading.set(false);
+        this.notificationService.error('Impossible de générer le rapport PDF');
         console.error(err);
       }
     });

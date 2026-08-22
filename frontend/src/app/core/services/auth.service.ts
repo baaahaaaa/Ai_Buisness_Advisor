@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface LoginRequest {
   username: string;
@@ -28,8 +29,7 @@ const USERNAME_KEY = 'aba_username';
 })
 export class AuthService {
 
-  // Adapter si nécessaire
-  private readonly apiUrl = 'http://localhost:8080/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   private readonly tokenSignal = signal<string | null>(
     localStorage.getItem(TOKEN_KEY)
@@ -42,92 +42,60 @@ export class AuthService {
     private router: Router
   ) {}
 
-  /**
-   * Connexion
-   */
   login(credentials: LoginRequest): Observable<LoginResponse> {
-
     return this.http.post<LoginResponse>(
       `${this.apiUrl}/login`,
       credentials
     ).pipe(
-
-      tap(response => {
-
-        localStorage.setItem(TOKEN_KEY, response.token);
-        localStorage.setItem(USERNAME_KEY, response.username);
-
-        this.tokenSignal.set(response.token);
-
-      })
-
+      tap(response => this.persistSession(response))
     );
-
   }
 
   /**
-   * Inscription
+   * Inscription.
+   * Le backend renvoie un token au meme titre que /login (voir
+   * AuthController.register cote Spring Boot) : on le stocke de la
+   * meme facon pour que l'utilisateur soit reellement connecte
+   * immediatement apres son inscription, plutot que d'etre renvoye
+   * vers /auth/login par le authGuard faute de token.
    */
-  register(data: RegisterRequest): Observable<any> {
-
-    return this.http.post(
+  register(data: RegisterRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
       `${this.apiUrl}/register`,
       data
+    ).pipe(
+      tap(response => this.persistSession(response))
     );
-
   }
 
-  /**
-   * Déconnexion
-   */
-  logout(): void {
+  private persistSession(response: LoginResponse): void {
+    localStorage.setItem(TOKEN_KEY, response.token);
+    localStorage.setItem(USERNAME_KEY, response.username);
+    this.tokenSignal.set(response.token);
+  }
 
+  logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USERNAME_KEY);
-
     this.tokenSignal.set(null);
-
     this.router.navigate(['/auth/login']);
-
   }
 
-  /**
-   * Retourne le JWT
-   */
   getToken(): string | null {
-
     return this.tokenSignal();
-
   }
 
-  /**
-   * Vérifie si connecté
-   */
   isLoggedIn(): boolean {
-
     return this.tokenSignal() !== null;
-
   }
 
-  /**
-   * Nom utilisateur connecté
-   */
   getCurrentUsername(): string {
-
     return localStorage.getItem(USERNAME_KEY) ?? 'Admin';
-
   }
 
-  /**
-   * Vérifie si utilisateur Admin
-   */
   isAdmin(): boolean {
-
     return true;
-
     // Plus tard :
     // return localStorage.getItem('role') === 'ROLE_ADMIN';
-
   }
-
 }

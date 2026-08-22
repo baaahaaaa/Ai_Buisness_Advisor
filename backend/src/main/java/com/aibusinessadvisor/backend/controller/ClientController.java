@@ -22,6 +22,10 @@ public class ClientController {
     public List<Client> getAllClients() {
         return clientRepository.findAll();
     }
+        @GetMapping("/count")
+    public long countClients() {
+        return clientRepository.count();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClient(@PathVariable Integer id) {

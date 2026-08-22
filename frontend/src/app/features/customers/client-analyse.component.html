@@ -14,10 +14,10 @@
       </div>
     </div>
     <div class="header-right">
-      <button mat-stroked-button class="action-btn">
-        <mat-icon fontSet="material-symbols-outlined">file_download</mat-icon>
-        Export Report
-      </button>
+     <button mat-stroked-button class="action-btn" (click)="exportReport()" [disabled]="exportLoading()">
+  <mat-icon fontSet="material-symbols-outlined">{{ exportLoading() ? 'sync' : 'file_download' }}</mat-icon>
+  {{ exportLoading() ? 'Génération...' : 'Export Report' }}
+</button>
       <button mat-flat-button class="premium-gradient ai-glow" (click)="loadAnalyse()">
         <mat-icon fontSet="material-symbols-outlined">refresh</mat-icon>
         Refresh AI Model
@@ -50,8 +50,7 @@
           <span class="metric-label">Client Segment</span>
         </div>
         <div class="metric-body">
-          <div class="metric-value">{{ data.segmentation.segment_predit }}</div>
-          <div class="metric-footer">
+<div class="metric-value">{{ data.segmentation.segment }}</div>          <div class="metric-footer">
             <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
             <span>{{ data.segmentation.nb_sinistres }} claim(s) record</span>
           </div>
@@ -116,14 +115,7 @@
                 <p>{{ rec }}</p>
               </div>
             </div>
-            <div class="telematics-banner" *ngIf="data.recommandations.telematics_eligible">
-              <div class="tele-badge"><mat-icon fontSet="material-symbols-outlined">sensors</mat-icon></div>
-              <div class="tele-info">
-                <h4>Telematics Program Eligible</h4>
-                <p>High potential for <strong>{{ data.recommandations.telematics_potential_reduction }}</strong> reduction based on behavior.</p>
-              </div>
-              <button mat-flat-button class="white-btn">Activate</button>
-            </div>
+            
           </div>
         </section>
 

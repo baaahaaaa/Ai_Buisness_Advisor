@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -61,9 +61,10 @@ export class ClientListComponent implements OnInit {
     'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
   ];
 
-  constructor(
+    constructor(
     private clientService: ClientService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   getAvatarColor(client: Client): string {
@@ -111,6 +112,9 @@ export class ClientListComponent implements OnInit {
   handlePageEvent(e: PageEvent): void {
     this.pageSize = e.pageSize;
     this.currentPage.set(e.pageIndex);
+  }
+    editClient(id: number): void {
+    this.router.navigate(['/customers/edit', id]);
   }
 
   deleteClient(id: number): void {

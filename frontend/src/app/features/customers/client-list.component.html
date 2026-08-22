@@ -90,10 +90,10 @@
               <mat-icon fontSet="material-symbols-outlined">more_horiz</mat-icon>
             </button>
             <mat-menu #menu="matMenu" class="premium-menu">
-              <button mat-menu-item [routerLink]="['/customers/edit', client.id]">
-                <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-                <span>Edit Profile</span>
-              </button>
+             <button mat-menu-item (click)="editClient(client.id)">
+  <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+  <span>Edit Profile</span>
+</button>
               <mat-divider></mat-divider>
               <button mat-menu-item (click)="deleteClient(client.id)" class="delete-item">
                 <mat-icon fontSet="material-symbols-outlined">delete_outline</mat-icon>

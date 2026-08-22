@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel
 import mysql.connector
 from fastapi import Depends
+from fastapi import APIRouter, Response, HTTPException
 from auth import verify_token
 from config import DB_CONFIG
 from agents.segmentation_agent import get_segment
@@ -54,6 +55,9 @@ def save_analysis_result(client_id, segmentation, risk, pricing, recommendation,
 def analyse_client(client_id: int):
     context = build_client_context(client_id)
 
+    if "error" in context:
+        raise HTTPException(status_code=404, detail=context["error"])
+
     save_analysis_result(
         client_id,
         context["segmentation"],
@@ -87,6 +91,9 @@ def analyse_client(client_id: int):
 @router.post("/chat/{client_id}", dependencies=[Depends(verify_token)])
 def chat_with_advisor(client_id: int, request: ChatRequest):
     context = build_client_context(client_id)
+
+    if "error" in context:
+        raise HTTPException(status_code=404, detail=context["error"])
 
     try:
         answer = answer_client_question(context, request.question)
