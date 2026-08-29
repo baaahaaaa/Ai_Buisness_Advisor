@@ -1,101 +1,159 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
-export interface LoginRequest {
+export interface LoginPayload {
   username: string;
   password: string;
 }
 
-export interface RegisterRequest {
+export interface RegisterPayload {
   username: string;
-  password: string;
   email: string;
+  password: string;
 }
 
-export interface LoginResponse {
+export interface AuthResponse {
   token: string;
   username: string;
-  roles: string[];
 }
-
-const TOKEN_KEY = 'aba_jwt_token';
-const USERNAME_KEY = 'aba_username';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private readonly apiUrl = `${environment.apiUrl}/api/auth`;
+  private readonly API_URL = 'http://localhost:8080/api/auth';
 
-  private readonly tokenSignal = signal<string | null>(
-    localStorage.getItem(TOKEN_KEY)
-  );
+  private readonly TOKEN_KEY = 'aba_jwt_token';
+  private readonly ROLES_KEY = 'aba_roles';
+  private readonly USERNAME_KEY = 'aba_username';
 
-  readonly isAuthenticated = computed(() => !!this.tokenSignal());
+  constructor(private http: HttpClient) {}
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      `${this.apiUrl}/login`,
-      credentials
+  /* =====================================================
+     LOGIN
+  ====================================================== */
+
+  login(payload: LoginPayload): Observable<AuthResponse> {
+
+    return this.http.post<AuthResponse>(
+      `${this.API_URL}/login`,
+      payload
     ).pipe(
-      tap(response => this.persistSession(response))
+      tap((response) => {
+        this.setToken(response.token);
+        this.setUsername(response.username);
+      })
     );
+
   }
 
-  /**
-   * Inscription.
-   * Le backend renvoie un token au meme titre que /login (voir
-   * AuthController.register cote Spring Boot) : on le stocke de la
-   * meme facon pour que l'utilisateur soit reellement connecte
-   * immediatement apres son inscription, plutot que d'etre renvoye
-   * vers /auth/login par le authGuard faute de token.
-   */
-  register(data: RegisterRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      `${this.apiUrl}/register`,
-      data
+
+  /* =====================================================
+     REGISTER
+  ====================================================== */
+
+  register(payload: RegisterPayload): Observable<AuthResponse> {
+
+    return this.http.post<AuthResponse>(
+      `${this.API_URL}/register`,
+      payload
     ).pipe(
-      tap(response => this.persistSession(response))
+      tap((response) => {
+        this.setToken(response.token);
+        this.setUsername(response.username);
+      })
     );
+
   }
 
-  private persistSession(response: LoginResponse): void {
-    localStorage.setItem(TOKEN_KEY, response.token);
-    localStorage.setItem(USERNAME_KEY, response.username);
-    this.tokenSignal.set(response.token);
-  }
+
+  /* =====================================================
+     LOGOUT
+  ====================================================== */
 
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USERNAME_KEY);
-    this.tokenSignal.set(null);
-    this.router.navigate(['/auth/login']);
+
+    this.removeToken();
+    localStorage.removeItem(this.ROLES_KEY);
+    localStorage.removeItem(this.USERNAME_KEY);
+
   }
+
+
+  /* =====================================================
+     AUTHENTICATION STATE
+  ====================================================== */
+
+  isAuthenticated(): boolean {
+
+    return !!this.getToken();
+
+  }
+
+
+    getCurrentUsername(): string {
+
+    return this.getUsername() ?? 'Administrateur';
+
+  }
+
+
+  /* =====================================================
+     TOKEN
+  ====================================================== */
 
   getToken(): string | null {
-    return this.tokenSignal();
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  isLoggedIn(): boolean {
-    return this.tokenSignal() !== null;
+  setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
   }
 
-  getCurrentUsername(): string {
-    return localStorage.getItem(USERNAME_KEY) ?? 'Admin';
+  removeToken(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
   }
 
-  isAdmin(): boolean {
-    return true;
-    // Plus tard :
-    // return localStorage.getItem('role') === 'ROLE_ADMIN';
+
+  /* =====================================================
+     USERNAME
+  ====================================================== */
+
+  getUsername(): string | null {
+    return localStorage.getItem(this.USERNAME_KEY);
   }
+
+  setUsername(username: string): void {
+    localStorage.setItem(this.USERNAME_KEY, username);
+  }
+
+
+  /* =====================================================
+     ROLES
+  ====================================================== */
+
+  getRoles(): string[] {
+    const roles = localStorage.getItem(this.ROLES_KEY);
+
+    if (!roles) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(roles);
+    } catch {
+      return [];
+    }
+  }
+
+  setRoles(roles: string[]): void {
+    localStorage.setItem(
+      this.ROLES_KEY,
+      JSON.stringify(roles)
+    );
+  }
+
 }

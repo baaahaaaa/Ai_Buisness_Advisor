@@ -3,24 +3,24 @@
     <div class="header-left">
       <a routerLink="/customers" class="back-link">
         <mat-icon fontSet="material-symbols-outlined">west</mat-icon>
-        <span>Back to Portfolio</span>
+        <span>Retour au portefeuille</span>
       </a>
       <div class="title-group">
-        <h1 class="page-title">Deep Insight Analysis</h1>
+        <h1 class="page-title">Analyse Approfondie</h1>
         <div class="client-meta">
-          <span class="client-id-tag">HOLDER #{{ clientId }}</span>
-          <span class="status-badge live">AI Sync Active</span>
+          <span class="client-id-tag">CLIENT #{{ clientId }}</span>
+          <span class="status-badge live">Synchronisation IA active</span>
         </div>
       </div>
     </div>
     <div class="header-right">
      <button mat-stroked-button class="action-btn" (click)="exportReport()" [disabled]="exportLoading()">
   <mat-icon fontSet="material-symbols-outlined">{{ exportLoading() ? 'sync' : 'file_download' }}</mat-icon>
-  {{ exportLoading() ? 'Génération...' : 'Export Report' }}
+  {{ exportLoading() ? 'Génération...' : 'Exporter le rapport' }}
 </button>
       <button mat-flat-button class="premium-gradient ai-glow" (click)="loadAnalyse()">
         <mat-icon fontSet="material-symbols-outlined">refresh</mat-icon>
-        Refresh AI Model
+        Actualiser l'analyse
       </button>
     </div>
   </div>
@@ -30,8 +30,8 @@
       <div class="orbit-circle"></div>
       <mat-icon fontSet="material-symbols-outlined">psychology</mat-icon>
     </div>
-    <h3>Cognitive Analysis in Progress</h3>
-    <p>Orchestrating 10 AI agents to build a comprehensive profile...</p>
+    <h3>Analyse cognitive en cours</h3>
+    <p>Orchestration de 9 agents IA pour construire un profil complet...</p>
     <mat-progress-bar mode="query" color="primary" class="thin-loader"></mat-progress-bar>
   </div>
 
@@ -42,17 +42,17 @@
   </div>
 
   <div *ngIf="!loading() && analyse() as data" class="analysis-grid">
-    <!-- Top Row: Core Metrics -->
+    <!-- Ligne du haut : métriques principales -->
     <div class="metrics-row">
       <mat-card class="metric-glass-card segment-card">
         <div class="metric-header">
           <div class="metric-icon purple"><mat-icon fontSet="material-symbols-outlined">category</mat-icon></div>
-          <span class="metric-label">Client Segment</span>
+          <span class="metric-label">Segment client</span>
         </div>
         <div class="metric-body">
 <div class="metric-value">{{ data.segmentation.segment }}</div>          <div class="metric-footer">
             <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
-            <span>{{ data.segmentation.nb_sinistres }} claim(s) record</span>
+            <span>{{ data.segmentation.nb_sinistres }} sinistre(s) enregistré(s)</span>
           </div>
         </div>
       </mat-card>
@@ -62,7 +62,7 @@
           <div class="metric-icon" [ngClass]="data.risque.score_risque > 60 ? 'red' : 'green'">
             <mat-icon fontSet="material-symbols-outlined">shield_with_heart</mat-icon>
           </div>
-          <span class="metric-label">Risk Probability</span>
+          <span class="metric-label">Score de risque</span>
         </div>
         <div class="metric-body">
           <div class="risk-meter-container">
@@ -74,7 +74,7 @@
           </div>
           <div class="metric-footer">
             <span class="risk-level" [ngClass]="data.risque.score_risque > 60 ? 'high' : 'low'">
-              {{ data.risque.score_risque > 60 ? 'High Risk' : 'Low Risk' }}
+              {{ data.risque.score_risque > 60 ? 'Risque élevé' : 'Risque faible' }}
             </span>
           </div>
         </div>
@@ -82,7 +82,7 @@
 
 <mat-card class="metric-glass-card pricing-card" style="background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: white;">        <div class="metric-header">
           <div class="metric-icon white"><mat-icon fontSet="material-symbols-outlined">auto_graph</mat-icon></div>
-          <span class="metric-label white">Optimized Premium</span>
+          <span class="metric-label white">Prime optimisée</span>
         </div>
         <div class="metric-body">
           <div class="metric-value white">{{ data.pricing.prime_recommandee | number:'1.0-0' }} <small>DT</small></div>
@@ -91,20 +91,20 @@
               <mat-icon fontSet="material-symbols-outlined">{{ data.pricing.variation_pct > 0 ? 'north_east' : 'south_west' }}</mat-icon>
               {{ data.pricing.variation_pct }}%
             </div>
-            <span>Suggested Adjustment</span>
+            <span>Ajustement suggéré</span>
           </div>
         </div>
       </mat-card>
     </div>
 
-    <!-- Row 2: Deep Analysis & Chat -->
+    <!-- Ligne 2 : Analyse détaillée & chat -->
     <div class="analysis-lower-grid">
       <div class="left-panels">
         <section class="premium-panel recommendations-panel ai-glow">
           <div class="panel-header">
             <div class="panel-title">
               <mat-icon fontSet="material-symbols-outlined">lightbulb</mat-icon>
-              <span>AI Strategic Guidance</span>
+              <span>Recommandations stratégiques</span>
             </div>
             <span class="agent-tag">RECOM-AGENT v1.2</span>
           </div>
@@ -123,11 +123,11 @@
           <mat-card class="status-glass-card" [class.alert]="data.fraude.fraude_suspecte">
             <div class="status-header">
               <mat-icon fontSet="material-symbols-outlined">{{ data.fraude.fraude_suspecte ? 'warning_amber' : 'verified_user' }}</mat-icon>
-              <span>Fraud Detection</span>
+              <span>Détection de fraude</span>
             </div>
             <div class="status-body">
               <div class="big-score">{{ data.fraude.score_suspicion }}<small>%</small></div>
-              <p class="status-desc">{{ data.fraude.fraude_suspecte ? 'Suspicious patterns detected' : 'Clear profile' }}</p>
+              <p class="status-desc">{{ data.fraude.fraude_suspecte ? 'Comportements suspects détectés' : 'Profil sain' }}</p>
               <div class="alerts-chips">
                 <span class="alert-chip" *ngFor="let alerte of data.fraude.alertes">{{ alerte }}</span>
               </div>
@@ -137,7 +137,7 @@
           <mat-card class="status-glass-card">
             <div class="status-header">
               <mat-icon fontSet="material-symbols-outlined">gavel</mat-icon>
-              <span>Compliance Scan</span>
+              <span>Contrôle de conformité</span>
             </div>
             <div class="status-body">
 <div class="compliance-badge" [class.valid]="data.compliance.statut_conformite === 'Valide'">                {{ data.compliance.statut_conformite }}
@@ -149,7 +149,7 @@
                 </div>
                 <div class="no-violations" *ngIf="data.compliance.violations.length === 0">
                   <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
-                  <span>All legal requirements met</span>
+                  <span>Toutes les exigences légales sont respectées</span>
                 </div>
               </div>
             </div>
@@ -160,16 +160,16 @@
       <div class="chat-panel">
         <mat-card class="premium-chat-card ai-glow">
           <div class="chat-header">
-            <div class="ai-avatar">AI</div>
+            <div class="ai-avatar">IA</div>
             <div class="chat-title-group">
-              <span class="chat-title">LLM Advisor Agent</span>
-              <span class="chat-status">Ready to assist</span>
+              <span class="chat-title">Conseiller IA</span>
+              <span class="chat-status">Prêt à vous aider</span>
             </div>
             <button mat-icon-button><mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon></button>
           </div>
           <div class="chat-body" #scrollMe [scrollTop]="scrollMe.scrollHeight">
             <div class="msg ai-msg">
-              <p>I have analyzed holder #{{clientId}}'s profile. You can ask me for specifics about their risk factors, pricing logic, or segment characteristics.</p>
+              <p>J'ai analysé le profil du client #{{clientId}}. Vous pouvez me demander des précisions sur les facteurs de risque, la logique de tarification, ou les caractéristiques du segment.</p>
             </div>
             <div *ngFor="let msg of chatHistory()" class="msg-group">
               <div class="msg user-msg"><p>{{ msg.question }}</p></div>
@@ -181,7 +181,7 @@
           </div>
           <div class="chat-footer">
             <div class="input-wrapper">
-              <input type="text" [(ngModel)]="question" (keyup.enter)="askQuestion()" placeholder="Ask Advisor anything..." [disabled]="chatLoading()">
+              <input type="text" [(ngModel)]="question" (keyup.enter)="askQuestion()" placeholder="Posez une question à l'IA..." [disabled]="chatLoading()">
               <button mat-icon-button (click)="askQuestion()" [disabled]="chatLoading() || !question().trim()" class="send-btn">
                 <mat-icon fontSet="material-symbols-outlined">send</mat-icon>
               </button>

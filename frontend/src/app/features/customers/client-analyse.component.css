@@ -129,3 +129,31 @@
 .pricing-card.premium-gradient {
   background: transparent !important;
 }
+/* --- Finitions visuelles additionnelles --- */
+
+/* Fait "respirer" la barre de risque à l'affichage */
+.risk-bar-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Empêche le texte des cartes de déborder sur petit écran */
+.metric-value { word-break: break-word; }
+
+/* Effet de profondeur plus marqué sur la carte pricing (déjà en gradient) */
+.pricing-card { box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.35) !important; }
+
+/* Empêche l'affichage d'un badge de variation vide si la donnée est à 0 */
+.variation-badge mat-icon { flex-shrink: 0; }
+
+/* Petite animation d'entrée décalée sur les cartes métriques (effet "pro") */
+.metrics-row .metric-glass-card { animation: cardRise 0.5s ease-out backwards; }
+.metrics-row .metric-glass-card:nth-child(1) { animation-delay: 0.05s; }
+.metrics-row .metric-glass-card:nth-child(2) { animation-delay: 0.15s; }
+.metrics-row .metric-glass-card:nth-child(3) { animation-delay: 0.25s; }
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Meilleure lisibilité du chat sur petits écrans */
+@media (max-width: 900px) {
+  .premium-chat-card { height: 480px; }
+}

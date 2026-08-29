@@ -1,0 +1,523 @@
+<div class="dashboard">
+
+  <!-- HEADER -->
+
+  <header class="page-header">
+
+    <div>
+
+      <span class="eyebrow">
+        EXECUTIVE OVERVIEW
+      </span>
+
+      <h1>
+        Tableau de bord
+      </h1>
+
+      <p>
+        Vue globale de votre portefeuille
+        d’assurance automobile.
+      </p>
+
+    </div>
+
+    <button
+      mat-flat-button
+      class="primary-action"
+      (click)="refresh()"
+      [disabled]="refreshing()">
+
+      <mat-icon
+        fontSet="material-symbols-outlined">
+
+        refresh
+
+      </mat-icon>
+
+      {{
+        refreshing()
+          ? 'Actualisation...'
+          : 'Actualiser'
+      }}
+
+    </button>
+
+  </header>
+
+
+  <!-- ERROR -->
+
+  @if (error()) {
+
+    <section class="error-banner">
+
+      <mat-icon
+        fontSet="material-symbols-outlined">
+
+        error
+
+      </mat-icon>
+
+      <div>
+
+        <strong>
+          Dashboard indisponible
+        </strong>
+
+        <span>
+          Impossible de récupérer
+          les indicateurs actuellement.
+        </span>
+
+      </div>
+
+      <button
+        mat-button
+        (click)="load()">
+
+        Réessayer
+
+      </button>
+
+    </section>
+
+  }
+
+
+  <!-- KPI -->
+
+  <section class="kpi-grid">
+
+    @if (loading()) {
+
+      @for (
+        item of [1,2,3,4];
+        track item
+      ) {
+
+        <div class="kpi-card skeleton-card">
+
+          <div class="skeleton skeleton-icon"></div>
+
+          <div class="skeleton skeleton-line"></div>
+
+          <div class="skeleton skeleton-value"></div>
+
+        </div>
+
+      }
+
+    } @else {
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon blue">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            groups
+          </mat-icon>
+
+        </div>
+
+        <span class="kpi-label">
+          Clients
+        </span>
+
+        <strong class="kpi-value">
+          {{ totalClients() | number }}
+        </strong>
+
+        <span class="kpi-caption">
+          Portefeuille total
+        </span>
+
+      </article>
+
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon gold">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            payments
+          </mat-icon>
+
+        </div>
+
+        <span class="kpi-label">
+          Prime moyenne
+        </span>
+
+        <strong class="kpi-value">
+          {{ avgPrime() | number:'1.0-0' }}
+          <small>DT</small>
+        </strong>
+
+        <span class="kpi-caption">
+          Prime actuelle moyenne
+        </span>
+
+      </article>
+
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon orange">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            schedule
+          </mat-icon>
+
+        </div>
+
+        <span class="kpi-label">
+          Taux de retard
+        </span>
+
+        <strong class="kpi-value">
+          {{ retardRate() | number:'1.1-1' }}%
+        </strong>
+
+        <span class="kpi-caption">
+          Paiements en retard
+        </span>
+
+      </article>
+
+
+      <article class="kpi-card">
+
+        <div class="kpi-icon red">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            shield
+          </mat-icon>
+
+        </div>
+
+        <span class="kpi-label">
+          Alertes fraude
+        </span>
+
+        <strong class="kpi-value">
+          {{ fraudeCount() | number }}
+        </strong>
+
+        <span class="kpi-caption">
+          Profils suspects
+        </span>
+
+      </article>
+
+    }
+
+  </section>
+
+
+  <!-- MAIN GRID -->
+
+  <section class="dashboard-grid">
+
+
+    <!-- SEGMENTS -->
+
+    <mat-card class="dashboard-card segments-card">
+
+      <div class="card-header">
+
+        <div>
+
+          <span class="card-eyebrow">
+            PORTEFEUILLE
+          </span>
+
+          <h2>
+            Répartition des segments
+          </h2>
+
+        </div>
+
+        <mat-icon
+          fontSet="material-symbols-outlined">
+          pie_chart
+        </mat-icon>
+
+      </div>
+
+
+      @if (loading()) {
+
+        <div class="chart-skeleton">
+
+          <div class="skeleton donut-skeleton"></div>
+
+          <div class="legend-skeleton">
+
+            @for (
+              item of [1,2,3,4,5];
+              track item
+            ) {
+
+              <div class="skeleton legend-line"></div>
+
+            }
+
+          </div>
+
+        </div>
+
+      } @else if (segments().length === 0) {
+
+        <div class="empty-state">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            pie_chart
+          </mat-icon>
+
+          <strong>
+            Aucune donnée disponible
+          </strong>
+
+          <span>
+            La répartition des segments
+            apparaîtra ici.
+          </span>
+
+        </div>
+
+      } @else {
+
+        <div class="segments-content">
+
+          <div class="donut">
+
+            <div class="donut-center">
+
+              <strong>
+                {{ totalClients() | number }}
+              </strong>
+
+              <span>
+                clients
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="segment-list">
+
+            @for (
+              segment of segments();
+              track trackSegment($index, segment)
+            ) {
+
+              <div class="segment-item">
+
+                <span class="segment-dot"></span>
+
+                <strong>
+                  {{ segment.segment }}
+                </strong>
+
+                <span>
+                  {{ segment.nombre | number }}
+                </span>
+
+                <b>
+                  {{ segment.pourcentage }}%
+                </b>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      }
+
+    </mat-card>
+
+
+    <!-- AI STATUS -->
+
+    <mat-card class="dashboard-card ai-card">
+
+      <div class="ai-card-top">
+
+        <div class="ai-status">
+
+          <span class="status-indicator"></span>
+
+          SYSTÈME OPÉRATIONNEL
+
+        </div>
+
+        <mat-icon
+          fontSet="material-symbols-outlined">
+
+          auto_awesome
+
+        </mat-icon>
+
+      </div>
+
+      <h2>
+        Intelligence multi-agents
+      </h2>
+
+      <p>
+        Votre portefeuille est analysé
+        par un ensemble d’agents spécialisés
+        en segmentation, risque, pricing,
+        recommandation, fraude et conformité.
+      </p>
+
+      <div class="agent-count">
+
+        <strong>
+          9
+        </strong>
+
+        <span>
+          agents disponibles
+        </span>
+
+      </div>
+
+      <a
+        mat-flat-button
+        class="ai-action"
+        routerLink="/customers">
+
+        <mat-icon
+          fontSet="material-symbols-outlined">
+          psychology
+        </mat-icon>
+
+        Ouvrir le centre d’analyse
+
+      </a>
+
+    </mat-card>
+
+
+    <!-- CLAIMS -->
+
+    <mat-card class="dashboard-card claims-card">
+
+      <div class="card-header">
+
+        <div>
+
+          <span class="card-eyebrow">
+            SINISTRALITÉ
+          </span>
+
+          <h2>
+            Sinistres par segment
+          </h2>
+
+        </div>
+
+        <mat-icon
+          fontSet="material-symbols-outlined">
+          bar_chart
+        </mat-icon>
+
+      </div>
+
+
+      @if (loading()) {
+
+        <div class="bars-skeleton">
+
+          @for (
+            item of [1,2,3,4,5];
+            track item
+          ) {
+
+            <div class="skeleton bar-skeleton"></div>
+
+          }
+
+        </div>
+
+      } @else if (claims().length === 0) {
+
+        <div class="empty-state">
+
+          <mat-icon
+            fontSet="material-symbols-outlined">
+            bar_chart
+          </mat-icon>
+
+          <strong>
+            Aucun sinistre disponible
+          </strong>
+
+        </div>
+
+      } @else {
+
+        <div class="bars">
+
+          @for (
+            item of claims();
+            track item.segment
+          ) {
+
+            <div class="bar-row">
+
+              <div class="bar-label">
+                {{ item.segment }}
+              </div>
+
+              <div class="bar-track">
+
+                <div
+                  class="bar-fill"
+                  [style.width.%]="
+                    claimWidth(
+                      item.nombre_sinistres
+                    )
+                  ">
+
+                  <span>
+                    {{ item.nombre_sinistres }}
+                  </span>
+
+                </div>
+
+              </div>
+
+              <span class="bar-average">
+
+                {{
+                  item.montant_moyen
+                    | number:'1.0-0'
+                }}
+                DT
+
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </mat-card>
+
+  </section>
+
+</div>

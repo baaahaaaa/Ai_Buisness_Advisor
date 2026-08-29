@@ -1,0 +1,52 @@
+.skeleton {
+  position: relative;
+  overflow: hidden;
+
+  background: var(--surface-muted);
+  border-radius: 8px;
+}
+
+.skeleton::after {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  transform: translateX(-100%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.55),
+      transparent
+    );
+
+  animation:
+    skeleton-shimmer 1.4s infinite;
+}
+
+@keyframes skeleton-shimmer {
+
+  100% {
+    transform: translateX(100%);
+  }
+
+}
+
+.skeleton-icon {
+  width: 42px;
+  height: 42px;
+}
+
+.skeleton-line {
+  width: 100px;
+  height: 12px;
+  margin-top: 18px;
+}
+
+.skeleton-value {
+  width: 150px;
+  height: 30px;
+  margin-top: 10px;
+}

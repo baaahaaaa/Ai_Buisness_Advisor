@@ -42,9 +42,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String username = jwtService.extractUsername(jwt);
 
+            System.out.println("[JWT DEBUG] username extrait = " + username);
+
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+
+                System.out.println("[JWT DEBUG] userDetails charge = " + userDetails.getUsername()
+                        + " / authorities = " + userDetails.getAuthorities());
+
+                boolean valid = jwtService.isTokenValid(jwt, userDetails);
+
+                System.out.println("[JWT DEBUG] token valide = " + valid);
+
+                if (valid) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
@@ -54,12 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("[JWT DEBUG] Authentication mise dans le SecurityContext");
                 }
             }
         } catch (JwtException | IllegalArgumentException e) {
-            // Token expire, malforme ou invalide : on n'authentifie pas la requete,
-            // mais on la laisse continuer (permitAll passera, le reste sera
-            // rejete proprement en 401 par Spring Security, pas en 500).
+            System.out.println("[JWT DEBUG] EXCEPTION : " + e.getClass().getSimpleName() + " - " + e.getMessage());
             SecurityContextHolder.clearContext();
         }
 

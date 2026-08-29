@@ -101,8 +101,7 @@ def get_risk_score(client_id: int) -> dict:
         "nb_retards"
     ]]
 
-    score = float(model.predict(X)[0])
-
+    score = float(np.clip(model.predict(X)[0], 0, 100))
     shap_values = explainer.shap_values(X)
 
     importance = {}

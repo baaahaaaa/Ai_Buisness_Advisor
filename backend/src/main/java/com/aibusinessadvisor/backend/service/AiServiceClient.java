@@ -1,78 +1,119 @@
 package com.aibusinessadvisor.backend.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
+
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+
 @Service
 public class AiServiceClient {
 
+
     private final RestTemplate restTemplate;
+
     private final HttpServletRequest request;
+
 
     @Value("${ai.service.url}")
     private String aiServiceUrl;
+
 
     public AiServiceClient(
             RestTemplate restTemplate,
             HttpServletRequest request
     ) {
+
         this.restTemplate = restTemplate;
+
         this.request = request;
     }
 
-    /**
-     * Récupère le JWT directement depuis la requête
-     * envoyée à Spring Boot.
-     */
+
+    // =====================================================
+    // JWT
+    // =====================================================
+
     private String getAuthorizationHeader() {
 
         String authorization =
-                request.getHeader(HttpHeaders.AUTHORIZATION);
+                request.getHeader(
+                        HttpHeaders.AUTHORIZATION
+                );
 
-        if (authorization == null || authorization.isBlank()) {
+
+        if (
+                authorization == null ||
+                authorization.isBlank()
+        ) {
+
             throw new IllegalStateException(
                     "Header Authorization absent de la requête Spring Boot"
             );
         }
 
+
         return authorization;
     }
 
-    /**
-     * Prépare les headers pour FastAPI.
-     */
+
+    // =====================================================
+    // HEADERS
+    // =====================================================
+
     private HttpHeaders createHeaders() {
 
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers =
+                new HttpHeaders();
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        headers.setContentType(
+                MediaType.APPLICATION_JSON
+        );
+
 
         headers.set(
                 HttpHeaders.AUTHORIZATION,
                 getAuthorizationHeader()
         );
 
+
         return headers;
     }
 
+
     private HttpEntity<Void> getEntity() {
-        return new HttpEntity<>(createHeaders());
+
+        return new HttpEntity<>(
+                createHeaders()
+        );
     }
 
-    /**
-     * Analyse complète d'un client.
-     */
-    public Map getAnalyse(Integer clientId) {
+
+    // =====================================================
+    // ANALYSE CLIENT
+    // =====================================================
+
+    public Map getAnalyse(
+            Integer clientId
+    ) {
 
         String url =
                 aiServiceUrl
                         + "/analyse/"
                         + clientId;
+
 
         ResponseEntity<Map> response =
                 restTemplate.exchange(
@@ -82,12 +123,15 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Chat IA.
-     */
+
+    // =====================================================
+    // CHAT
+    // =====================================================
+
     public Map getChatResponse(
             Integer clientId,
             String question
@@ -98,17 +142,24 @@ public class AiServiceClient {
                         + "/chat/"
                         + clientId;
 
+
+        HttpHeaders headers =
+                createHeaders();
+
+
         Map<String, String> body =
                 Map.of(
                         "question",
                         question
                 );
 
+
         HttpEntity<Map<String, String>> entity =
                 new HttpEntity<>(
                         body,
-                        createHeaders()
+                        headers
                 );
+
 
         ResponseEntity<Map> response =
                 restTemplate.exchange(
@@ -118,18 +169,24 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Historique des analyses.
-     */
-    public Map getHistorique(Integer clientId) {
+
+    // =====================================================
+    // HISTORIQUE
+    // =====================================================
+
+    public Map getHistorique(
+            Integer clientId
+    ) {
 
         String url =
                 aiServiceUrl
                         + "/historique/"
                         + clientId;
+
 
         ResponseEntity<Map> response =
                 restTemplate.exchange(
@@ -139,13 +196,18 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Historique du chat.
-     */
-    public Map getChatHistorique(Integer clientId) {
+
+    // =====================================================
+    // HISTORIQUE CHAT
+    // =====================================================
+
+    public Map getChatHistorique(
+            Integer clientId
+    ) {
 
         String url =
                 aiServiceUrl
@@ -153,6 +215,7 @@ public class AiServiceClient {
                         + clientId
                         + "/historique";
 
+
         ResponseEntity<Map> response =
                 restTemplate.exchange(
                         url,
@@ -161,18 +224,22 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Dashboard.
-     */
+
+    // =====================================================
+    // DASHBOARD
+    // =====================================================
+
     public Map getDashboard() {
 
         String url =
                 aiServiceUrl
                         + "/dashboard";
 
+
         ResponseEntity<Map> response =
                 restTemplate.exchange(
                         url,
@@ -181,19 +248,25 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Rapport client JSON.
-     */
-    public Map getReportClient(Integer clientId) {
+
+    // =====================================================
+    // RAPPORT CLIENT
+    // =====================================================
+
+    public Map getReportClient(
+            Integer clientId
+    ) {
 
         String url =
                 aiServiceUrl
                         + "/report/client/"
                         + clientId;
 
+
         ResponseEntity<Map> response =
                 restTemplate.exchange(
                         url,
@@ -202,18 +275,22 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Rapport global JSON.
-     */
+
+    // =====================================================
+    // RAPPORT GLOBAL
+    // =====================================================
+
     public Map getReportGlobal() {
 
         String url =
                 aiServiceUrl
                         + "/report/global";
 
+
         ResponseEntity<Map> response =
                 restTemplate.exchange(
                         url,
@@ -222,12 +299,15 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Health du service IA.
-     */
+
+    // =====================================================
+    // HEALTH
+    // =====================================================
+
     public Map getHealth() {
 
         String url =
@@ -235,6 +315,7 @@ public class AiServiceClient {
                         .replace("/api", "")
                         + "/";
 
+
         ResponseEntity<Map> response =
                 restTemplate.exchange(
                         url,
@@ -243,13 +324,18 @@ public class AiServiceClient {
                         Map.class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Rapport client PDF.
-     */
-    public byte[] getReportClientPdf(Integer clientId) {
+
+    // =====================================================
+    // RAPPORT CLIENT PDF
+    // =====================================================
+
+    public byte[] getReportClientPdf(
+            Integer clientId
+    ) {
 
         String url =
                 aiServiceUrl
@@ -257,6 +343,7 @@ public class AiServiceClient {
                         + clientId
                         + "/pdf";
 
+
         ResponseEntity<byte[]> response =
                 restTemplate.exchange(
                         url,
@@ -265,18 +352,22 @@ public class AiServiceClient {
                         byte[].class
                 );
 
+
         return response.getBody();
     }
 
-    /**
-     * Rapport global PDF.
-     */
+
+    // =====================================================
+    // RAPPORT GLOBAL PDF
+    // =====================================================
+
     public byte[] getReportGlobalPdf() {
 
         String url =
                 aiServiceUrl
                         + "/report/global/pdf";
 
+
         ResponseEntity<byte[]> response =
                 restTemplate.exchange(
                         url,
@@ -285,6 +376,8 @@ public class AiServiceClient {
                         byte[].class
                 );
 
+
         return response.getBody();
     }
+
 }

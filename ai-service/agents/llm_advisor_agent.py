@@ -1,7 +1,9 @@
 import json
 import requests
 
-from config import OLLAMA_URL, OLLAMA_MODEL as MODEL
+from config import GROQ_API_KEY, GROQ_MODEL
+
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 def enrich_client_data(data):
@@ -41,13 +43,51 @@ def enrich_client_data(data):
 def build_llm_payload(data):
     """Copie allegee de `data` pour le prompt LLM : retire le dict SHAP brut
     (deja resume dans explication_textuelle) pour reduire le nombre de tokens
-    envoyes et donc le temps de traitement du prompt par Ollama."""
+    envoyes et donc le temps de traitement du prompt."""
 
     light = json.loads(json.dumps(data, ensure_ascii=False))
     if "risque" in light and "explication" in light["risque"]:
         del light["risque"]["explication"]
     return light
 
+
+def _call_groq(prompt: str, temperature: float, max_tokens: int) -> str:
+
+    if not GROQ_API_KEY:
+        raise RuntimeError("GROQ_API_KEY manquant")
+
+    print(f"[GROQ] Appel du modele : {GROQ_MODEL}", flush=True)
+
+    response = requests.post(
+        GROQ_URL,
+        headers={
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": GROQ_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        },
+        timeout=30
+    )
+
+    print(f"[GROQ] HTTP status : {response.status_code}", flush=True)
+
+    if response.status_code != 200:
+        print("[GROQ] Erreur API :", response.text[:1000], flush=True)
+        response.raise_for_status()
+
+    result = response.json()
+    content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+    print("[GROQ] Reponse recue (500 premiers car.) :", content[:500], flush=True)
+
+    if not content:
+        raise RuntimeError("Groq a retourne une reponse vide")
+
+    return content
 
 def ask_llm_advisor(data):
 
@@ -92,73 +132,194 @@ Retourne uniquement ce JSON :
 "conclusion":""
 }}
 """
+    txt = _call_groq(prompt, temperature=0.1, max_tokens=1000)
 
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": MODEL,
-            "prompt": prompt,
-            "stream": False,
-            "keep_alive": "30m",
-            "options": {
-                "temperature": 0.1,
-                "num_predict": 800
-            }
-        },
-        timeout=300
-    )
+    # ---------------------------------------------------------
+    # NETTOYAGE DE LA REPONSE LLM
+    # ---------------------------------------------------------
 
-    response.raise_for_status()
-
-    txt = response.json()["response"]
-
-    txt = txt.replace("```json", "")
-    txt = txt.replace("```", "")
     txt = txt.strip()
+
+    # Retirer les éventuels blocs Markdown
+    if txt.startswith("```json"):
+        txt = txt[7:]
+
+    if txt.startswith("```"):
+        txt = txt[3:]
+
+    if txt.endswith("```"):
+        txt = txt[:-3]
+
+    txt = txt.strip()
+
+    # ---------------------------------------------------------
+    # EXTRACTION DU JSON
+    # ---------------------------------------------------------
+
+    result = None
 
     start = txt.find("{")
     end = txt.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        txt_json = txt[start:end + 1]
-    else:
-        txt_json = txt
 
-    try:
-        result = json.loads(txt_json)
-    except Exception:
+    if start != -1 and end != -1 and end > start:
+
+        txt_json = txt[start:end + 1]
+
+        try:
+            result = json.loads(txt_json)
+
+        except json.JSONDecodeError as e:
+
+            print("Erreur parsing JSON LLM :", e)
+            print("Reponse LLM brute :", txt)
+
+    # ---------------------------------------------------------
+    # FALLBACK SI LE JSON EST INVALIDE
+    # ---------------------------------------------------------
+
+    if not isinstance(result, dict):
+
         result = {
-            "resume": "",
-            "analyse_metier": txt,
+            "resume": (
+                f"Client {data.get('client_id', 'inconnu')} "
+                f"avec un niveau de risque "
+                f"{data.get('indicateurs_metier', {}).get('niveau_risque', 'inconnu')}."
+            ),
+
+            "analyse_metier": (
+                "Analyse automatique basee sur les resultats "
+                "de segmentation, risque, tarification, fraude "
+                "et conformite."
+            ),
+
             "points_forts": [],
+
             "points_faibles": [],
+
             "actions_recommandees": [],
-            "conclusion": ""
+
+            "conclusion": (
+                "Les resultats doivent etre interpretes "
+                "avec les indicateurs fournis par les differents agents."
+            )
         }
 
-    if isinstance(result.get("analyse_metier"), dict):
-        result["analyse_metier"] = (
-            "Analyse metier generee automatiquement a partir des resultats des agents."
+    # ---------------------------------------------------------
+    # GARANTIR LES CHAMPS OBLIGATOIRES
+    # ---------------------------------------------------------
+
+    result.setdefault("resume", "")
+    result.setdefault("analyse_metier", "")
+    result.setdefault("points_forts", [])
+    result.setdefault("points_faibles", [])
+    result.setdefault("actions_recommandees", [])
+    result.setdefault("conclusion", "")
+
+    # ---------------------------------------------------------
+    # SECURISER LES TEXTES
+    # ---------------------------------------------------------
+
+    if not isinstance(result["resume"], str):
+        result["resume"] = str(result["resume"])
+
+    if not result["resume"].strip():
+
+        score = data.get("risque", {}).get("score_risque", 0)
+        age = data.get("segmentation", {}).get("age", 0)
+        sinistres = data.get("risque", {}).get("nb_sinistres", 0)
+
+        result["resume"] = (
+            f"Client {data.get('client_id', 'inconnu')}, age de {age} ans, "
+            f"avec un score de risque de {score} et "
+            f"{sinistres} sinistre(s) declare(s)."
         )
 
+    if not isinstance(result["analyse_metier"], str):
+        result["analyse_metier"] = str(result["analyse_metier"])
+
+    if not result["analyse_metier"].strip():
+        result["analyse_metier"] = (
+            "Analyse metier generee a partir des resultats "
+            "des agents IA."
+        )
+
+    if not isinstance(result["conclusion"], str):
+        result["conclusion"] = str(result["conclusion"])
+
+    if not result["conclusion"].strip():
+        result["conclusion"] = (
+            "La decision finale doit tenir compte du risque, "
+            "de la tarification et du statut de conformite."
+        )
+
+    # ---------------------------------------------------------
+    # ANALYSE_METIER DOIT RESTER UNE PHRASE
+    # ---------------------------------------------------------
+
+    if isinstance(result.get("analyse_metier"), dict):
+
+        result["analyse_metier"] = (
+            "Analyse metier generee automatiquement "
+            "a partir des resultats des agents."
+        )
+
+    # ---------------------------------------------------------
+    # NETTOYAGE DES LISTES
+    # ---------------------------------------------------------
+
     def clean(lst):
+
+        if not isinstance(lst, list):
+            return []
+
         new = []
+
         for x in lst:
+
             if isinstance(x, str):
-                new.append(x)
+
+                value = x.strip()
+
+                if value:
+                    new.append(value)
+
             elif isinstance(x, dict):
-                new.append(" - ".join(str(v) for v in x.values()))
+
+                value = " - ".join(
+                    str(v) for v in x.values()
+                ).strip()
+
+                if value:
+                    new.append(value)
+
             else:
-                new.append(str(x))
+
+                value = str(x).strip()
+
+                if value:
+                    new.append(value)
+
         return new
 
-    result["points_forts"] = clean(result.get("points_forts", []))
-    result["points_faibles"] = clean(result.get("points_faibles", []))
-    result["actions_recommandees"] = clean(result.get("actions_recommandees", []))
+    result["points_forts"] = clean(
+        result.get("points_forts", [])
+    )
+
+    result["points_faibles"] = clean(
+        result.get("points_faibles", [])
+    )
+
+    result["actions_recommandees"] = clean(
+        result.get("actions_recommandees", [])
+    )
+
+    # ---------------------------------------------------------
+    # CONFIDENCE = CALCULEE PAR LE SYSTEME
+    # ---------------------------------------------------------
 
     result["confidence"] = data["confidence"]
 
     return result
-
 
 def answer_client_question(context: dict, question: str) -> str:
     """Repond en texte libre a une question posee par l''utilisateur, en se basant
@@ -181,21 +342,4 @@ INSTRUCTIONS :
 - Reponse claire et concise, 2 a 5 phrases maximum.
 """
 
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": MODEL,
-            "prompt": prompt,
-            "stream": False,
-            "keep_alive": "30m",
-            "options": {
-                "temperature": 0.3,
-                "num_predict": 400
-            }
-        },
-        timeout=300
-    )
-    response.raise_for_status()
-
-    ollama_data = response.json()
-    return ollama_data.get("response", "").strip()
+    return _call_groq(prompt, temperature=0.3, max_tokens=400).strip()

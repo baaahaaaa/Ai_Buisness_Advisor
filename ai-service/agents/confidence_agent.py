@@ -7,47 +7,78 @@ def compute_confidence(
 ):
     score = 0
 
-    # Segmentation
+    # =====================================================
+    # SEGMENTATION
+    # =====================================================
+
     if segmentation.get("segment") is not None:
         score += 20
 
-    # Risk
+    # =====================================================
+    # RISQUE
+    # =====================================================
+
     risk_score = risk.get("score_risque")
 
     if risk_score is not None and 0 <= risk_score <= 100:
         score += 20
 
-    # Pricing
+    # =====================================================
+    # PRICING
+    # =====================================================
+
     if pricing.get("prime_recommandee", 0) > 0:
         score += 15
 
-    # Fraud
+    # =====================================================
+    # FRAUDE
+    # =====================================================
+
     if fraud.get("fraude_suspecte") is False:
         score += 20
     else:
         score += 10
 
-    # Compliance
-    if compliance.get("statut_conformite") == "Validé":
+    # =====================================================
+    # COMPLIANCE
+    # =====================================================
+
+    compliance_status = compliance.get("statut_conformite", "")
+
+    if compliance_status == "Valide":
         score += 15
     else:
         score += 5
 
-    # Explainability
+    # =====================================================
+    # EXPLAINABILITY
+    # =====================================================
+
     if len(risk.get("explication_textuelle", [])) > 0:
         score += 10
     else:
         score += 5
 
+    # =====================================================
+    # SECURITE
+    # =====================================================
+
     if score > 100:
         score = 100
 
+    # =====================================================
+    # NIVEAU
+    # =====================================================
+
     if score >= 90:
-        level = "Très élevé"
+        level = "Tres eleve"
+
     elif score >= 75:
-        level = "Élevé"
+        level = "Eleve"
+
     elif score >= 60:
         level = "Moyen"
+
     else:
         level = "Faible"
 

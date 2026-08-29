@@ -1,25 +1,41 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+
 import { AuthService } from '../services/auth.service';
 
-export const authInterceptor: HttpInterceptorFn = (req,next)=>{
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-    const auth=inject(AuthService);
+  const authService = inject(AuthService);
 
-    const token=auth.getToken();
+  const token = authService.getToken();
 
-    if(token){
+  console.log(
+    '[AuthInterceptor]',
+    req.method,
+    req.url,
+    'JWT présent =',
+    !!token
+  );
 
-        req=req.clone({
-
-            setHeaders:{
-                Authorization:`Bearer ${token}`
-            }
-
-        });
-
-    }
+  // Aucun JWT
+  if (!token) {
+    console.warn(
+      '[AuthInterceptor] Aucun JWT trouvé'
+    );
 
     return next(req);
+  }
 
+  // Ajouter le JWT
+  const authenticatedRequest = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  console.log(
+    '[AuthInterceptor] Authorization: Bearer <JWT>'
+  );
+
+  return next(authenticatedRequest);
 };

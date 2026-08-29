@@ -7,8 +7,7 @@
     <div class="header-actions">
       <div class="search-container">
         <mat-icon fontSet="material-symbols-outlined">search</mat-icon>
-        <input type="text" (input)="onSearchChange($event)" placeholder="Search clients, ID, or address...">
-      </div>
+<input type="text" [value]="search()" (input)="onSearchChange($event)" placeholder="Search clients, ID, or address...">      </div>
       <button mat-flat-button class="premium-gradient ai-glow add-btn" routerLink="/customers/nouveau">
         <mat-icon fontSet="material-symbols-outlined">add</mat-icon> 
         <span>New Client</span>

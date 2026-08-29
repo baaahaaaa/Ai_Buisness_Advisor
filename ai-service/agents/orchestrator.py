@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, HTTPException
+﻿from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel
 import mysql.connector
 from fastapi import Depends
@@ -114,20 +114,24 @@ def chat_with_advisor(client_id: int, request: ChatRequest):
     }
 
 
-@router.get("/dashboard")
+@router.get(
+    "/dashboard",
+    dependencies=[Depends(verify_token)]
+)
 def get_dashboard():
     return analyze_data()
-
 
 @router.get("/report/client/{client_id}", dependencies=[Depends(verify_token)])
 def get_client_report(client_id: int):
     return generate_report(client_id)
 
 
-@router.get("/report/global")
+@router.get(
+    "/report/global",
+    dependencies=[Depends(verify_token)]
+)
 def get_global_report():
     return generate_report()
-
 
 @router.get("/report/client/{client_id}/pdf", dependencies=[Depends(verify_token)])
 def get_client_report_pdf(client_id: int):

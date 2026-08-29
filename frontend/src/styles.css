@@ -1,73 +1,1960 @@
+
+/* ============================================================
+   AI BUSINESS ADVISOR
+   GLOBAL DESIGN SYSTEM
+   Angular 20+
+   
+   Navy & Gold / Premium Data & AI Dashboard
+   ============================================================ */
+
+
+/* ============================================================
+   00 — ANGULAR MATERIAL + GOOGLE FONTS
+   ============================================================ */
+
 @import "@angular/material/prebuilt-themes/azure-blue.css";
 
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0&display=swap");
+
+
+/* ============================================================
+   01 — DESIGN TOKENS
+   ============================================================ */
+
 :root {
-  /* Colors */
+
+  /* ----------------------------------------------------------
+     BRAND — NAVY & GOLD
+     ---------------------------------------------------------- */
+
+  --navy-950: #050e1c;
+  --navy-900: #08172c;
+  --navy-800: #0b1f3a;
+  --navy-700: #123761;
+
+  --gold-600: #b9883c;
+  --gold-500: #c49a4a;
+  --gold-400: #d8b56b;
+  --gold-300: #e3c27c;
+
+
+  /* ----------------------------------------------------------
+     Legacy / General Brand Aliases
+     ---------------------------------------------------------- */
+
+  --navy: #071a2f;
+  --navy-2: #0b2442;
+  --navy-3: #102f54;
+
+  --gold: #c49a4a;
+  --gold-dark: #a67c2f;
+  --gold-light: #d8b56b;
+  --gold-soft: #f8f1df;
+
+  --accent: #c49a4a;
+  --accent-dark: #a67c2f;
+  --accent-light: #d8b56b;
+  --accent-soft: #f8f1df;
+
+
+  /* ----------------------------------------------------------
+     PRIMARY / SECONDARY
+     ---------------------------------------------------------- */
+
   --primary: #2563eb;
-  --primary-soft: rgba(37, 99, 235, 0.1);
-  --accent: #b8863b;
-  --accent-soft: rgba(184, 134, 58, 0.1);
+  --primary-dark: #1d4ed8;
+  --primary-darker: #1e40af;
+  --primary-light: #60a5fa;
+  --primary-soft: #eff6ff;
+
+  --secondary: #4f46e5;
+  --secondary-dark: #4338ca;
+  --secondary-soft: #eef2ff;
+
+
+  /* ----------------------------------------------------------
+     SEMANTIC ACCENTS
+     ---------------------------------------------------------- */
+
+  --blue: #2563eb;
+  --green: #16a34a;
+  --orange: #d97706;
+  --red: #dc2626;
+  --purple: #7c3aed;
+  --danger: #dc2626;
+
+  --success: #16a34a;
+  --success-dark: #15803d;
+  --success-soft: #dcfce7;
+
+  --warning: #d97706;
+  --warning-dark: #b45309;
+  --warning-soft: #fef3c7;
+
+  --danger-dark: #b91c1c;
+  --danger-soft: #fee2e2;
+
+  --info: #0284c7;
+  --info-dark: #0369a1;
+  --info-soft: #e0f2fe;
+
+
+  /* ----------------------------------------------------------
+     SURFACES
+     ---------------------------------------------------------- */
+
+  --background: #f5f7fb;
+  --background-dark: #eef2f7;
+
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --surface-muted: #f1f5f9;
+
+  --overlay: rgba(15, 23, 42, 0.55);
+
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY
+     
+     Display → Space Grotesk
+     Body    → Inter
+     Ledger  → IBM Plex Mono
+     ---------------------------------------------------------- */
+
   --ink: #0f172a;
+  --ink-strong: #111827;
   --ink-soft: #64748b;
-  --background: #f8fafc;
-  --card: #ffffff;
+  --ink-muted: #94a3b8;
+  --ink-faint: #cbd5e1;
+
+  --font-display:
+    "Space Grotesk",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --font-body:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --font-mono:
+    "IBM Plex Mono",
+    "SFMono-Regular",
+    Menlo,
+    Consolas,
+    monospace;
+
+
+  /* ----------------------------------------------------------
+     BORDERS
+     ---------------------------------------------------------- */
+
   --border: #e2e8f0;
-  --danger: #ef4444;
-  --success: #22c55e;
-  --warning: #f59e0b;
+  --border-light: #eef2f7;
+  --border-dark: #cbd5e1;
 
-  /* Typography */
-  --font-body: 'Inter', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* ----------------------------------------------------------
+     RADIUS
+     ---------------------------------------------------------- */
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 17px;
+  --radius-xl: 24px;
+  --radius-2xl: 24px;
+  --radius-pill: 999px;
+
+
+  /* ----------------------------------------------------------
+     SHADOWS
+     ---------------------------------------------------------- */
+
+  --shadow-xs:
+    0 1px 2px rgba(15, 23, 42, 0.04);
+
+  --shadow-sm:
+    0 4px 12px rgba(15, 23, 42, 0.05);
+
+  --shadow-md:
+    0 10px 30px rgba(15, 23, 42, 0.08);
+
+  --shadow-lg:
+    0 20px 50px rgba(15, 23, 42, 0.12);
+
+  --shadow-xl:
+    0 30px 80px rgba(15, 23, 42, 0.16);
+
+
+  /* ----------------------------------------------------------
+     MOTION
+     ---------------------------------------------------------- */
+
+  --ease-out-quart:
+    cubic-bezier(.25, 1, .5, 1);
+
+  --ease-spring:
+    cubic-bezier(.16, 1, .3, 1);
+
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 450ms;
+
+  --transition-fast:
+    150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --transition:
+    250ms cubic-bezier(.25, 1, .5, 1);
+
+  --transition-slow:
+    450ms cubic-bezier(.25, 1, .5, 1);
+
+
+  /* ----------------------------------------------------------
+     LAYOUT
+     ---------------------------------------------------------- */
+
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 76px;
+  --topbar-height: 72px;
+
+  --content-max-width: 1500px;
 }
 
-* {
+
+/* ============================================================
+   02 — GLOBAL RESET
+   ============================================================ */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-body {
+html {
+  width: 100%;
+  min-height: 100%;
   margin: 0;
-  font-family: var(--font-body);
-  background-color: var(--background);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+  font-size: 16px;
+
+  scroll-behavior: smooth;
+
+  background: var(--background);
+
+  -webkit-text-size-adjust: 100%;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
+body {
+  width: 100%;
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: var(--ink);
+  background: var(--background);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  text-rendering: optimizeLegibility;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+app-root {
+  display: block;
+
+  width: 100%;
+  min-height: 100vh;
+}
+
+
+/* ============================================================
+   03 — TYPOGRAPHY
+   ============================================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+
   font-family: var(--font-display);
   font-weight: 700;
-  margin-top: 0;
+
+  color: var(--ink);
+
+  letter-spacing: -0.025em;
 }
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.08;
+}
+
+h2 {
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+h4 {
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+h5 {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+h6 {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+strong,
+b {
+  font-weight: 700;
+}
+
+small {
+  font-size: 0.8125rem;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+}
+
+
+/* ============================================================
+   04 — FINANCIAL / NUMERIC TYPOGRAPHY
+   ============================================================ */
+
+.tabular,
+.kpi-value,
+.indicator-value,
+.numeric,
+td.numeric {
+  font-family: var(--font-mono) !important;
+
+  font-variant-numeric: tabular-nums;
+
+  font-feature-settings:
+    "tnum" 1;
+}
+
+
+/* ============================================================
+   05 — LINKS
+   ============================================================ */
 
 a {
-  text-decoration: none;
   color: inherit;
-  transition: all 0.2s ease;
+
+  text-decoration: none;
+
+  transition:
+    color var(--transition),
+    opacity var(--transition);
 }
 
-/* Material Overrides */
+a:hover {
+  color: var(--primary);
+}
+
+
+/* ============================================================
+   06 — FORMS
+   ============================================================ */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+input,
+textarea,
+select {
+  color: var(--ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-muted);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+
+/* ============================================================
+   07 — ACCESSIBILITY / FOCUS
+   ============================================================ */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline:
+    2px solid var(--gold-600);
+
+  outline-offset: 2px;
+
+  border-radius: 4px;
+}
+
+
+/* ============================================================
+   08 — TEXT UTILITIES
+   ============================================================ */
+
+.text-soft {
+  color: var(--ink-soft) !important;
+}
+
+.text-muted {
+  color: var(--ink-muted) !important;
+}
+
+.text-faint {
+  color: var(--ink-faint) !important;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.text-warning {
+  color: var(--warning) !important;
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+.text-info {
+  color: var(--info) !important;
+}
+
+.text-gold {
+  color: var(--gold) !important;
+}
+
+.text-navy {
+  color: var(--navy) !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+
+/* ============================================================
+   09 — LAYOUT UTILITIES
+   ============================================================ */
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+
+/* ============================================================
+   10 — PAGE CONTAINER
+   ============================================================ */
+
+.page-container {
+  width: 100%;
+
+  max-width:
+    var(--content-max-width);
+
+  margin: 0 auto;
+
+  padding: 32px;
+}
+
+
+/* ============================================================
+   11 — PREMIUM SURFACES
+   ============================================================ */
+
+.surface {
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    var(--radius-lg);
+
+  box-shadow:
+    var(--shadow-sm);
+}
+
+.surface-soft {
+  background:
+    var(--surface-soft);
+
+  border:
+    1px solid var(--border-light);
+
+  border-radius:
+    var(--radius-lg);
+}
+
+.glass-card {
+  background:
+    rgba(255, 255, 255, 0.82) !important;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.65) !important;
+
+  backdrop-filter:
+    blur(20px);
+
+  -webkit-backdrop-filter:
+    blur(20px);
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.08) !important;
+}
+
+
+/* ============================================================
+   12 — PREMIUM GRADIENT
+   ============================================================ */
+
+.premium-gradient {
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary) 0%,
+      var(--secondary) 100%
+    ) !important;
+
+  color: #ffffff !important;
+}
+
+.premium-gradient .mat-icon,
+.premium-gradient .mdc-button__label {
+  color: #ffffff !important;
+}
+
+
+/* ============================================================
+   13 — NAVY GRADIENT
+   ============================================================ */
+
+.navy-gradient {
+  background:
+    linear-gradient(
+      145deg,
+      var(--navy-950) 0%,
+      var(--navy-800) 55%,
+      var(--navy-700) 100%
+    );
+
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   14 — GOLD GRADIENT
+   ============================================================ */
+
+.gold-gradient {
+  background:
+    linear-gradient(
+      135deg,
+      var(--gold-400),
+      var(--gold-500)
+    );
+
+  color:
+    var(--navy);
+}
+
+
+/* ============================================================
+   15 — AI GLOW
+   ============================================================ */
+
+.ai-glow {
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.06),
+    0 12px 32px rgba(37, 99, 235, 0.12);
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.ai-glow:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.10),
+    0 20px 45px rgba(37, 99, 235, 0.18);
+}
+
+
+/* ============================================================
+   16 — STATUS BADGES
+   ============================================================ */
+
+.status-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 28px;
+
+  padding:
+    5px 10px;
+
+  border-radius:
+    var(--radius-pill);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.04em;
+
+  white-space:
+    nowrap;
+}
+
+.status-badge::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background:
+    currentColor;
+}
+
+.status-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.status-warning {
+  color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.status-danger {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.status-info {
+  color: var(--info);
+  background: var(--info-soft);
+}
+
+
+/* ============================================================
+   17 — DIVIDER
+   ============================================================ */
+
+.divider {
+  width: 100%;
+  height: 1px;
+
+  background:
+    var(--border-light);
+
+  border: 0;
+}
+
+
+/* ============================================================
+   18 — ANGULAR MATERIAL CARDS
+   ============================================================ */
+
 .mat-mdc-card {
-  border-radius: 12px !important;
-  border: 1px solid var(--border) !important;
-  box-shadow: var(--shadow-sm) !important;
+  border-radius:
+    var(--radius-lg) !important;
+
+  border:
+    1px solid var(--border) !important;
+
+  background:
+    var(--surface) !important;
+
+  box-shadow:
+    var(--shadow-sm) !important;
+
+  overflow:
+    hidden;
 }
 
-.mat-mdc-button, .mat-mdc-raised-button {
-  border-radius: 8px !important;
-  text-transform: none !important;
-  font-weight: 600 !important;
+.mat-mdc-card:hover {
+  border-color:
+    #d9e2ef !important;
 }
 
-/* Global utility classes */
-.text-soft { color: var(--ink-soft); }
-.spacer { flex: 1 1 auto; }
+
+/* ============================================================
+   19 — ANGULAR MATERIAL BUTTONS
+   ============================================================ */
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  min-height:
+    42px;
+
+  border-radius:
+    var(--radius-md) !important;
+
+  padding-left:
+    18px !important;
+
+  padding-right:
+    18px !important;
+
+  font-family:
+    var(--font-body) !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    -0.01em !important;
+
+  text-transform:
+    none !important;
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    background var(--transition) !important;
+}
+
+.mat-mdc-button:hover,
+.mat-mdc-raised-button:hover,
+.mat-mdc-flat-button:hover,
+.mat-mdc-outlined-button:hover {
+  transform:
+    translateY(-1px);
+}
+
+
+/* ============================================================
+   20 — MATERIAL MENU
+   ============================================================ */
+
+.mat-mdc-menu-panel {
+  min-width:
+    220px !important;
+
+  padding:
+    6px !important;
+
+  border:
+    1px solid var(--border) !important;
+
+  border-radius:
+    14px !important;
+
+  box-shadow:
+    var(--shadow-xl) !important;
+
+  background:
+    var(--surface) !important;
+}
+
+.mat-mdc-menu-item {
+  min-height:
+    42px !important;
+
+  border-radius:
+    9px;
+
+  font-family:
+    var(--font-body) !important;
+}
+
+.mat-mdc-menu-item:hover {
+  background:
+    var(--surface-soft) !important;
+}
+
+
+/* ============================================================
+   21 — MATERIAL DIVIDER
+   ============================================================ */
+
+.mat-divider {
+  border-top-color:
+    var(--border-light) !important;
+}
+
+
+/* ============================================================
+   22 — MATERIAL FORM FIELDS
+   ============================================================ */
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-text-field-wrapper {
+  border-radius:
+    var(--radius-md) !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  font-family:
+    var(--font-body) !important;
+}
+
+
+/* ============================================================
+   23 — MATERIAL ICONS
+   ============================================================ */
+
+.material-symbols-outlined {
+  font-family:
+    "Material Symbols Outlined";
+
+  font-weight:
+    400;
+
+  font-style:
+    normal;
+
+  font-size:
+    22px;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    normal;
+
+  text-transform:
+    none;
+
+  display:
+    inline-block;
+
+  white-space:
+    nowrap;
+
+  word-wrap:
+    normal;
+
+  direction:
+    ltr;
+
+  font-feature-settings:
+    "liga";
+
+  -webkit-font-feature-settings:
+    "liga";
+
+  -webkit-font-smoothing:
+    antialiased;
+}
+
+
+/* ============================================================
+   24 — ICON BUTTON
+   ============================================================ */
+
+.icon-button {
+  width:
+    40px;
+
+  height:
+    40px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    10px;
+
+  background:
+    transparent;
+
+  color:
+    var(--ink-soft);
+
+  transition:
+    background var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.icon-button:hover {
+  background:
+    var(--surface-soft);
+
+  color:
+    var(--primary);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* ============================================================
+   25 — TOPBAR GLOBAL
+   ============================================================ */
+
+.topbar-surface {
+  height:
+    var(--topbar-height);
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  padding:
+    0 24px;
+
+  background:
+    rgba(255, 255, 255, 0.92);
+
+  border-bottom:
+    1px solid var(--border-light);
+
+  backdrop-filter:
+    blur(16px);
+
+  -webkit-backdrop-filter:
+    blur(16px);
+
+  position:
+    sticky;
+
+  top:
+    0;
+
+  z-index:
+    100;
+}
+
+
+/* ============================================================
+   26 — BRAND
+   ============================================================ */
+
+.brand {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  color:
+    var(--ink);
+}
+
+.brand-mark {
+  width:
+    42px;
+
+  height:
+    42px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--gold-400),
+      var(--gold-500)
+    );
+
+  color:
+    var(--navy);
+
+  font-family:
+    var(--font-display);
+
+  font-weight:
+    800;
+
+  box-shadow:
+    0 8px 20px rgba(196, 154, 74, 0.22);
+}
+
+.brand-title {
+  font-family:
+    var(--font-display);
+
+  font-size:
+    15px;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    -0.02em;
+}
+
+.brand-subtitle {
+  margin-top:
+    1px;
+
+  font-size:
+    9px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    0.14em;
+
+  text-transform:
+    uppercase;
+
+  color:
+    var(--ink-muted);
+}
+
+
+/* ============================================================
+   27 — NAVIGATION
+   ============================================================ */
+
+.nav-link {
+  position:
+    relative;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  min-height:
+    40px;
+
+  padding:
+    0 12px;
+
+  border-radius:
+    9px;
+
+  color:
+    var(--ink-soft);
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
+  transition:
+    background var(--transition),
+    color var(--transition);
+}
+
+.nav-link:hover {
+  background:
+    var(--surface-soft);
+
+  color:
+    var(--ink);
+}
+
+.nav-link.active {
+  color:
+    var(--primary);
+
+  background:
+    var(--primary-soft);
+}
+
+.nav-link.active::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  left:
+    12px;
+
+  right:
+    12px;
+
+  bottom:
+    -1px;
+
+  height:
+    2px;
+
+  border-radius:
+    999px;
+
+  background:
+    var(--primary);
+}
+
+
+/* ============================================================
+   28 — SIDEBAR
+   ============================================================ */
+
+.sidebar-surface {
+  width:
+    var(--sidebar-width);
+
+  min-height:
+    100vh;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--navy-800) 0%,
+      var(--navy-900) 100%
+    );
+
+  color:
+    #ffffff;
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    8px 0 30px rgba(7, 26, 47, 0.08);
+}
+
+.sidebar-section-title {
+  padding:
+    20px 16px 8px;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.12em;
+
+  text-transform:
+    uppercase;
+}
+
+.sidebar-link {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  margin:
+    3px 10px;
+
+  padding:
+    11px 12px;
+
+  border-radius:
+    10px;
+
+  color:
+    rgba(255, 255, 255, 0.68);
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
+  transition:
+    background var(--transition),
+    color var(--transition),
+    transform var(--transition);
+}
+
+.sidebar-link:hover {
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  color:
+    #ffffff;
+
+  transform:
+    translateX(1px);
+}
+
+.sidebar-link.active {
+  color:
+    #ffffff;
+
+  background:
+    rgba(37, 99, 235, 0.22);
+
+  box-shadow:
+    inset 3px 0 0 var(--primary);
+}
+
+
+/* ============================================================
+   29 — DASHBOARD KPI
+   ============================================================ */
+
+.kpi-card {
+  position:
+    relative;
+
+  padding:
+    22px;
+
+  background:
+    var(--surface);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    var(--radius-lg);
+
+  box-shadow:
+    var(--shadow-sm);
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.kpi-card:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    var(--shadow-md);
+}
+
+.kpi-label {
+  margin-bottom:
+    7px;
+
+  color:
+    var(--ink-muted);
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.06em;
+
+  text-transform:
+    uppercase;
+}
+
+.kpi-value {
+  font-family:
+    var(--font-mono) !important;
+
+  font-size:
+    28px;
+
+  line-height:
+    1.1;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.04em;
+
+  color:
+    var(--ink);
+}
+
+
+/* ============================================================
+   30 — AI STATUS
+   ============================================================ */
+
+.ai-status {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  padding:
+    5px 9px;
+
+  border-radius:
+    var(--radius-pill);
+
+  background:
+    rgba(22, 163, 74, 0.10);
+
+  color:
+    var(--success);
+
+  font-size:
+    10px;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.06em;
+
+  text-transform:
+    uppercase;
+}
+
+.ai-status::before {
+  content:
+    "";
+
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    50%;
+
+  background:
+    currentColor;
+
+  box-shadow:
+    0 0 0 4px rgba(22, 163, 74, 0.10);
+}
+
+
+/* ============================================================
+   31 — DATA TABLE
+   ============================================================ */
+
+.data-table {
+  width:
+    100%;
+
+  border-collapse:
+    separate;
+
+  border-spacing:
+    0;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:
+    var(--radius-lg);
+
+  background:
+    var(--surface);
+}
+
+.data-table th {
+  padding:
+    13px 16px;
+
+  background:
+    var(--surface-soft);
+
+  border-bottom:
+    1px solid var(--border);
+
+  color:
+    var(--ink-soft);
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.05em;
+
+  text-align:
+    left;
+
+  text-transform:
+    uppercase;
+}
+
+.data-table td {
+  padding:
+    15px 16px;
+
+  border-bottom:
+    1px solid var(--border-light);
+
+  color:
+    var(--ink);
+
+  font-size:
+    13px;
+}
+
+.data-table td.numeric {
+  font-family:
+    var(--font-mono) !important;
+
+  font-variant-numeric:
+    tabular-nums;
+}
+
+.data-table tr:last-child td {
+  border-bottom:
+    0;
+}
+
+.data-table tbody tr {
+  transition:
+    background var(--transition);
+}
+
+.data-table tbody tr:hover {
+  background:
+    #f8fafc;
+}
+
+
+/* ============================================================
+   32 — LOADING
+   ============================================================ */
+
+.loading-shimmer {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  background:
+    #e2e8f0;
+
+  border-radius:
+    var(--radius-sm);
+}
+
+.loading-shimmer::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  transform:
+    translateX(-100%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.65),
+      transparent
+    );
+
+  animation:
+    shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+
+  100% {
+    transform:
+      translateX(100%);
+  }
+}
+
+
+/* ============================================================
+   33 — PAGE TRANSITIONS
+   ============================================================ */
+
+.page-enter {
+  animation:
+    pageEnter 300ms var(--ease-out-quart) both;
+}
+
+@keyframes pageEnter {
+
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateY(8px);
+  }
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* Route-level fade */
+
+.route-fade-in {
+  animation:
+    route-fade-in 450ms var(--ease-out-quart) both;
+}
+
+@keyframes route-fade-in {
+
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateY(8px);
+  }
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* ============================================================
+   34 — SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width:
+    10px;
+
+  height:
+    10px;
+}
+
+::-webkit-scrollbar-track {
+  background:
+    transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background:
+    #cbd5e1;
+
+  border-radius:
+    999px;
+
+  border:
+    2px solid var(--background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:
+    #94a3b8;
+}
+
+
+/* Firefox */
+
+* {
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    #cbd5e1 transparent;
+}
+
+
+/* ============================================================
+   35 — SELECTION
+   ============================================================ */
+
+::selection {
+  background:
+    rgba(196, 154, 74, 0.22);
+
+  color:
+    var(--ink);
+}
+
+
+/* ============================================================
+   36 — RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1200px) {
+
+  :root {
+    --sidebar-width:
+      230px;
+  }
+
+  .page-container {
+    padding:
+      28px;
+  }
+}
+
+
+@media (max-width: 900px) {
+
+  :root {
+    --topbar-height:
+      64px;
+  }
+
+  .page-container {
+    padding:
+      24px;
+  }
+
+  .sidebar-surface {
+    width:
+      var(--sidebar-collapsed-width);
+  }
+
+  .sidebar-link {
+    justify-content:
+      center;
+  }
+
+  .sidebar-link span:not(.material-symbols-outlined) {
+    display:
+      none;
+  }
+
+  .sidebar-section-title {
+    display:
+      none;
+  }
+
+  .brand-title,
+  .brand-subtitle {
+    display:
+      none;
+  }
+}
+
+
+@media (max-width: 700px) {
+
+  .page-container {
+    padding:
+      20px 16px;
+  }
+
+  .topbar-surface {
+    padding:
+      0 16px;
+  }
+
+  .kpi-value {
+    font-size:
+      24px;
+  }
+
+  h1 {
+    font-size:
+      2rem;
+  }
+
+  h2 {
+    font-size:
+      1.65rem;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .page-container {
+    padding:
+      16px 12px;
+  }
+
+  .topbar-surface {
+    padding:
+      0 12px;
+  }
+
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-flat-button,
+  .mat-mdc-outlined-button,
+  .mat-mdc-unelevated-button {
+    padding-left:
+      14px !important;
+
+    padding-right:
+      14px !important;
+  }
+}
+
+
+/* ============================================================
+   37 — DARK MODE
+   ============================================================ */
+
+html[data-theme="dark"] {
+
+  --background:
+    #0b1220;
+
+  --background-dark:
+    #111827;
+
+  --surface:
+    #111827;
+
+  --surface-soft:
+    #172033;
+
+  --surface-muted:
+    #1e293b;
+
+  --ink:
+    #f8fafc;
+
+  --ink-strong:
+    #ffffff;
+
+  --ink-soft:
+    #94a3b8;
+
+  --ink-muted:
+    #64748b;
+
+  --ink-faint:
+    #475569;
+
+  --border:
+    #243247;
+
+  --border-light:
+    #1e293b;
+
+  --border-dark:
+    #334155;
+
+  --primary-soft:
+    #172554;
+
+  --secondary-soft:
+    #1e1b4b;
+
+  --gold-soft:
+    #2d2617;
+
+  color-scheme:
+    dark;
+}
+
+
+html[data-theme="dark"] body {
+  background:
+    var(--background);
+
+  color:
+    var(--ink);
+}
+
+
+/* Dark mode surfaces */
+
+html[data-theme="dark"] .topbar-surface {
+  background:
+    rgba(17, 24, 39, 0.92);
+
+  border-bottom-color:
+    var(--border);
+}
+
+html[data-theme="dark"] .glass-card {
+  background:
+    rgba(17, 24, 39, 0.82) !important;
+
+  border-color:
+    rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .data-table tbody tr:hover {
+  background:
+    #172033;
+}
+
+
+/* ============================================================
+   38 — REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      0.001ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.001ms !important;
+
+    scroll-behavior:
+      auto !important;
+  }
+}

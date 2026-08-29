@@ -20,45 +20,45 @@ import { NotificationService } from '../../core/services/notification.service';
         <div class="auth-brand">
           <div class="brand-mark">AI</div>
           <h1>Business Advisor</h1>
-          <p>Join the future of insurance intelligence</p>
+          <p>L'intelligence artificielle au service de l'assurance</p>
         </div>
 
         <mat-card class="auth-card glass-card ai-glow">
           <mat-card-header>
-            <mat-card-title>Create Account</mat-card-title>
-            <mat-card-subtitle>Set up your professional agent profile</mat-card-subtitle>
+            <mat-card-title>Créer un compte</mat-card-title>
+            <mat-card-subtitle>Configurez votre profil de conseiller</mat-card-subtitle>
           </mat-card-header>
-          
+
           <mat-card-content>
             <form (ngSubmit)="onRegister()" #regForm="ngForm" class="auth-form">
               <mat-form-field appearance="outline">
-                <mat-label>Email Address</mat-label>
+                <mat-label>Adresse e-mail</mat-label>
                 <input matInput type="email" name="email" [(ngModel)]="email" required email>
                 <mat-icon matSuffix fontSet="material-symbols-outlined">mail</mat-icon>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Username</mat-label>
+                <mat-label>Nom d'utilisateur</mat-label>
                 <input matInput name="username" [(ngModel)]="username" required minlength="4">
                 <mat-icon matSuffix fontSet="material-symbols-outlined">person</mat-icon>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Password</mat-label>
+                <mat-label>Mot de passe</mat-label>
                 <input matInput [type]="hide() ? 'password' : 'text'" name="password" [(ngModel)]="password" required minlength="6">
                 <button type="button" mat-icon-button matSuffix (click)="hide.set(!hide())">
                   <mat-icon fontSet="material-symbols-outlined">{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
               </mat-form-field>
 
-              <button mat-flat-button color="primary" class="premium-gradient auth-submit" [disabled]="loading() || !regForm.valid">
-                {{ loading() ? 'Creating Account...' : 'Get Premium Access' }}
+              <button mat-flat-button color="primary" class="premium-gradient ai-glow auth-submit" [disabled]="loading() || !regForm.valid">
+                {{ loading() ? 'Création du compte...' : 'Créer mon compte' }}
               </button>
             </form>
           </mat-card-content>
 
           <mat-card-footer class="auth-footer">
-            <p>Already have an account? <a routerLink="/auth/login">Sign in</a></p>
+            <p>Déjà un compte ? <a routerLink="/auth/login">Se connecter</a></p>
           </mat-card-footer>
         </mat-card>
       </div>
@@ -118,11 +118,11 @@ export class RegisterComponent {
     this.loading.set(true);
     this.authService.register({ username: this.username, password: this.password, email: this.email }).subscribe({
       next: () => {
-        this.notification.success('Account created successfully. Welcome to AI Advisor.');
+        this.notification.success('Compte créé. Bienvenue sur AI Business Advisor.');
         this.router.navigate(['/dashboard']);
       },
-      error: () => {
-        this.notification.error('Error during registration. Please try again.');
+      error: (err) => {
+        this.notification.error(err?.error?.detail ?? 'Erreur lors de l\'inscription. Veuillez réessayer.');
         this.loading.set(false);
       }
     });

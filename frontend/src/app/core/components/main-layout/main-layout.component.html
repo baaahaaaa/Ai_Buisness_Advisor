@@ -1,0 +1,206 @@
+@if (loadingService.isLoading()) {
+  <mat-progress-bar class="global-progress" mode="indeterminate"></mat-progress-bar>
+}
+
+<mat-sidenav-container class="app-shell">
+
+  <mat-sidenav
+    #drawer
+    class="sidebar"
+    [mode]="mobile() ? 'over' : 'side'"
+    [opened]="!mobile()">
+
+    <div class="sidebar-inner">
+
+      <!-- BRAND -->
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div class="brand-text">
+          <strong>Business Advisor</strong>
+          <span>Insurance Intelligence</span>
+        </div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <nav class="navigation">
+
+        <section>
+          <span class="navigation-title">Principal</span>
+
+          @for (item of primaryNavigation; track item.route; let i = $index) {
+            <a
+              mat-button
+              class="navigation-item"
+              [style.animation-delay.ms]="i * 45"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+              (click)="closeDrawer(drawer)">
+              <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </section>
+
+        <section>
+          <span class="navigation-title">Intelligence IA</span>
+
+          @for (item of intelligenceNavigation; track item.route + item.label; let i = $index) {
+            <a
+              mat-button
+              class="navigation-item"
+              [style.animation-delay.ms]="120 + i * 45"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              (click)="closeDrawer(drawer)">
+              <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+              @if (item.badge) {
+                <span class="navigation-badge">{{ item.badge }}</span>
+              }
+            </a>
+          }
+        </section>
+
+        <section>
+          <span class="navigation-title">Administration</span>
+
+          @for (item of administrationNavigation; track item.route; let i = $index) {
+            <a
+              mat-button
+              class="navigation-item"
+              [style.animation-delay.ms]="220 + i * 45"
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              (click)="closeDrawer(drawer)">
+              <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+              <span>{{ item.label }}</span>
+            </a>
+          }
+        </section>
+
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <!-- SYSTEM STATUS -->
+      <div class="system-status">
+        <div class="system-icon">
+          <mat-icon fontSet="material-symbols-outlined">smart_toy</mat-icon>
+        </div>
+        <div>
+          <strong>AI Engine</strong>
+          <span>9 agents opérationnels</span>
+        </div>
+        <span class="online-dot"></span>
+      </div>
+
+      <!-- USER -->
+      <div class="sidebar-user">
+        <div class="avatar">{{ getInitials() }}</div>
+        <div class="user-info">
+          <strong>{{ getDisplayName() }}</strong>
+          <span>Administrateur</span>
+        </div>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu utilisateur">
+          <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
+        </button>
+      </div>
+
+    </div>
+
+  </mat-sidenav>
+
+  <!-- MAIN -->
+  <mat-sidenav-content class="main-content">
+
+    <header class="topbar">
+
+      <button mat-icon-button class="mobile-menu" (click)="drawer.toggle()" aria-label="Ouvrir le menu">
+        <mat-icon fontSet="material-symbols-outlined">menu</mat-icon>
+      </button>
+
+      <div class="breadcrumb">
+        <span>AI Business Advisor</span>
+        <mat-icon fontSet="material-symbols-outlined">chevron_right</mat-icon>
+        <strong>Intelligence décisionnelle</strong>
+      </div>
+
+      <div class="topbar-actions">
+
+        <div class="global-search">
+          <mat-icon fontSet="material-symbols-outlined">search</mat-icon>
+          <input
+            type="search"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
+            (keyup.enter)="onSearch()"
+            placeholder="Rechercher un client..." />
+        </div>
+
+        <button
+          mat-icon-button
+          class="toolbar-button"
+          (click)="toggleTheme()"
+          [attr.aria-label]="themeService.theme() === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre'">
+          <mat-icon fontSet="material-symbols-outlined">
+            {{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}
+          </mat-icon>
+        </button>
+
+        <button mat-icon-button class="toolbar-button" aria-label="Notifications">
+          <mat-icon fontSet="material-symbols-outlined">notifications</mat-icon>
+          <span class="notification-dot"></span>
+        </button>
+
+        <button mat-button class="topbar-user" [matMenuTriggerFor]="userMenu">
+          <span class="avatar small">{{ getInitials() }}</span>
+          <span class="topbar-user-name">{{ getDisplayName() }}</span>
+          <mat-icon fontSet="material-symbols-outlined">expand_more</mat-icon>
+        </button>
+
+      </div>
+
+    </header>
+
+    <main class="page-container">
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
+
+<!-- USER MENU -->
+<mat-menu #userMenu="matMenu">
+
+  <div class="user-menu-header">
+    <span class="avatar">{{ getInitials() }}</span>
+    <div>
+      <strong>{{ getDisplayName() }}</strong>
+      <span>Administrateur</span>
+    </div>
+  </div>
+
+  <mat-divider />
+
+  <button mat-menu-item routerLink="/profile">
+    <mat-icon fontSet="material-symbols-outlined">person</mat-icon>
+    <span>Mon profil</span>
+  </button>
+
+  <button mat-menu-item routerLink="/settings">
+    <mat-icon fontSet="material-symbols-outlined">settings</mat-icon>
+    <span>Paramètres</span>
+  </button>
+
+  <mat-divider />
+
+  <button mat-menu-item class="logout-button" (click)="logout()">
+    <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
+    <span>Déconnexion</span>
+  </button>
+
+</mat-menu>

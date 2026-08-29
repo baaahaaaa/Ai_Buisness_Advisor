@@ -14,21 +14,49 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
-    children: [
-      { 
-        path: 'dashboard', 
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) 
-      },
-      { 
-        path: 'customers', 
-        loadChildren: () => import('./features/customers/customers.routes').then(m => m.CUSTOMER_ROUTES) 
-      },
-      {
-        path: 'reports',
-        loadComponent: () => import('./features/reports/reports.component').then(m => m.ReportsComponent)
-      },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+    
+   children: [
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component')
+        .then(m => m.DashboardComponent)
+  },
+
+  {
+    path: 'customers',
+    loadChildren: () =>
+      import('./features/customers/customers.routes')
+        .then(m => m.CUSTOMER_ROUTES)
+  },
+
+  {
+    path: 'reports',
+    loadComponent: () =>
+      import('./features/reports/reports.component')
+        .then(m => m.ReportsComponent)
+  },
+
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./features/profile/profile.component')
+        .then(m => m.ProfileComponent)
+  },
+
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./features/settings/settings.component')
+        .then(m => m.SettingsComponent)
+  },
+
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  }
+]
   },
   { path: '**', redirectTo: 'dashboard' }
 ];
