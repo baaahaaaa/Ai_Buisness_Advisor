@@ -15,3 +15,7 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Generated development logs
+*-logs.txt
+backend_error.txt
