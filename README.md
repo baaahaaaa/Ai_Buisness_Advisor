@@ -2,7 +2,7 @@
 
 **Système Multi-Agents Intelligent pour une compagnie d'assurance automobile**
 
-> **Version 2** — 10 Agents Spécialisés | Architecture 5 couches | Interaction LLM
+> **Initial prototype (V1).** This repository preserves the first experiment of AI Business Advisor. For the newer project, see [ai-business-advisor-v2](https://github.com/baaahaaaa/ai-business-advisor-v2). Features described below may be experimental.
 
 ---
 
